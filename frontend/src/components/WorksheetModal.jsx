@@ -103,38 +103,54 @@ export default function WorksheetModal({ order, onClose }) {
             </div>
           </div>
 
-          {/* Rincian Ukuran / Size Chart Breakdown */}
-          <div>
-            <h4 className="font-heading font-bold text-[11px] sm:text-xs uppercase tracking-wider text-muted mb-2 border-b border-line pb-1">
-              Rincian Ukuran (Size Breakdown)
-            </h4>
-            <div className="overflow-x-auto no-scrollbar border border-line rounded-lg">
-              <table className="w-full text-center border-collapse text-[11px] sm:text-xs">
-                <thead>
-                  <tr className="bg-canvas border-b border-line">
-                    <th className="py-1.5 px-2 font-semibold">Size</th>
-                    <th className="py-1.5 px-2 border-l border-line">S</th>
-                    <th className="py-1.5 px-2 border-l border-line">M</th>
-                    <th className="py-1.5 px-2 border-l border-line">L</th>
-                    <th className="py-1.5 px-2 border-l border-line">XL</th>
-                    <th className="py-1.5 px-2 border-l border-line">XXL</th>
-                    <th className="py-1.5 px-2 border-l border-line font-bold bg-primary/10 text-primary">Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="py-2 px-2 font-semibold bg-canvas/40">Jumlah</td>
-                    <td className="py-2 px-2 border-l border-line">{sizes.S || 0}</td>
-                    <td className="py-2 px-2 border-l border-line">{sizes.M || 0}</td>
-                    <td className="py-2 px-2 border-l border-line">{sizes.L || 0}</td>
-                    <td className="py-2 px-2 border-l border-line">{sizes.XL || 0}</td>
-                    <td className="py-2 px-2 border-l border-line">{sizes.XXL || 0}</td>
-                    <td className="py-2 px-2 border-l border-line font-bold bg-primary/10 text-primary">{totalQty} pcs</td>
-                  </tr>
-                </tbody>
-              </table>
+          {/* Rincian Ukuran / Spesifikasi Teknis Khusus */}
+          {ws.customSpecs && ws.customSpecs.length > 0 ? (
+            <div>
+              <h4 className="font-heading font-bold text-[11px] sm:text-xs uppercase tracking-wider text-muted mb-2 border-b border-line pb-1">
+                Rincian & Spesifikasi Teknis Item
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
+                {ws.customSpecs.map((spec, sIdx) => (
+                  <div key={sIdx} className="p-2.5 bg-canvas/60 rounded-lg border border-line text-xs flex justify-between items-center">
+                    <span className="text-muted text-[11px]">{spec.label}:</span>
+                    <span className="font-semibold text-ink text-right">{spec.value}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div>
+              <h4 className="font-heading font-bold text-[11px] sm:text-xs uppercase tracking-wider text-muted mb-2 border-b border-line pb-1">
+                Rincian Ukuran (Size Breakdown)
+              </h4>
+              <div className="overflow-x-auto no-scrollbar border border-line rounded-lg">
+                <table className="w-full text-center border-collapse text-[11px] sm:text-xs">
+                  <thead>
+                    <tr className="bg-canvas border-b border-line">
+                      <th className="py-1.5 px-2 font-semibold">Size</th>
+                      <th className="py-1.5 px-2 border-l border-line">S</th>
+                      <th className="py-1.5 px-2 border-l border-line">M</th>
+                      <th className="py-1.5 px-2 border-l border-line">L</th>
+                      <th className="py-1.5 px-2 border-l border-line">XL</th>
+                      <th className="py-1.5 px-2 border-l border-line">XXL</th>
+                      <th className="py-1.5 px-2 border-l border-line font-bold bg-primary/10 text-primary">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="py-2 px-2 font-semibold bg-canvas/40">Jumlah</td>
+                      <td className="py-2 px-2 border-l border-line">{sizes.S || 0}</td>
+                      <td className="py-2 px-2 border-l border-line">{sizes.M || 0}</td>
+                      <td className="py-2 px-2 border-l border-line">{sizes.L || 0}</td>
+                      <td className="py-2 px-2 border-l border-line">{sizes.XL || 0}</td>
+                      <td className="py-2 px-2 border-l border-line">{sizes.XXL || 0}</td>
+                      <td className="py-2 px-2 border-l border-line font-bold bg-primary/10 text-primary">{totalQty} pcs</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
 
           {/* Catatan Pengerjaan & Tanda Persetujuan */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4 pt-1">

@@ -73,8 +73,8 @@ export default function CheckProject({ orders = INITIAL_ORDERS }) {
         </form>
 
         {/* Quick Sample Links */}
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted">
-          <span>Coba contoh kode pesanan:</span>
+        <div className="mt-3 flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs text-muted">
+          <span className="font-medium text-ink">Contoh kode tracking:</span>
           <button
             type="button"
             onClick={() => {
@@ -83,7 +83,37 @@ export default function CheckProject({ orders = INITIAL_ORDERS }) {
             }}
             className="px-2 py-0.5 rounded bg-canvas border border-line hover:border-primary text-primary font-mono font-semibold"
           >
-            WM-0012 (Sablon Berjalan)
+            WM-0012 (Kaos)
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setInputCode('WM-0021');
+              setSearchParams({ code: 'WM-0021' });
+            }}
+            className="px-2 py-0.5 rounded bg-canvas border border-line hover:border-primary text-primary font-mono font-semibold"
+          >
+            WM-0021 (Lanyard & ID Card)
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setInputCode('WM-0024');
+              setSearchParams({ code: 'WM-0024' });
+            }}
+            className="px-2 py-0.5 rounded bg-canvas border border-line hover:border-primary text-primary font-mono font-semibold"
+          >
+            WM-0024 (Slempang Wisuda)
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setInputCode('WM-0028');
+              setSearchParams({ code: 'WM-0028' });
+            }}
+            className="px-2 py-0.5 rounded bg-canvas border border-line hover:border-primary text-primary font-mono font-semibold"
+          >
+            WM-0028 (Buku Tahunan)
           </button>
           <button
             type="button"
@@ -93,17 +123,7 @@ export default function CheckProject({ orders = INITIAL_ORDERS }) {
             }}
             className="px-2 py-0.5 rounded bg-canvas border border-line hover:border-primary text-primary font-mono font-semibold"
           >
-            WM-0009 (Selesai)
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setInputCode('WM-0015');
-              setSearchParams({ code: 'WM-0015' });
-            }}
-            className="px-2 py-0.5 rounded bg-canvas border border-line hover:border-primary text-primary font-mono font-semibold"
-          >
-            WM-0015 (Desain)
+            WM-0009 (Jaket Selesai)
           </button>
         </div>
       </div>

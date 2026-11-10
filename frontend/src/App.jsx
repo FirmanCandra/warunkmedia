@@ -12,8 +12,10 @@ import { INITIAL_ORDERS } from './data/mockData';
 
 export default function App() {
   const [orders, setOrders] = useState(() => {
-    const saved = localStorage.getItem('warunk_orders');
-    return saved ? JSON.parse(saved) : INITIAL_ORDERS;
+    const saved = localStorage.getItem('warunk_orders_v3');
+    if (saved) return JSON.parse(saved);
+    localStorage.setItem('warunk_orders_v3', JSON.stringify(INITIAL_ORDERS));
+    return INITIAL_ORDERS;
   });
 
   const [currentUser, setCurrentUser] = useState(() => {
@@ -22,7 +24,7 @@ export default function App() {
   });
 
   useEffect(() => {
-    localStorage.setItem('warunk_orders', JSON.stringify(orders));
+    localStorage.setItem('warunk_orders_v3', JSON.stringify(orders));
   }, [orders]);
 
   useEffect(() => {

@@ -14,14 +14,42 @@ use Illuminate\Support\Facades\Storage;
 
 class OrderController extends Controller
 {
-    const DEFAULT_STAGES = [
-        ['id' => 'desain', 'name' => 'Desain & Mockup'],
-        ['id' => 'potong', 'name' => 'Potong Kain'],
-        ['id' => 'sablon_bordir', 'name' => 'Sablon / Bordir'],
-        ['id' => 'jahit', 'name' => 'Jahit'],
-        ['id' => 'qc_packing', 'name' => 'QC & Packing'],
-        ['id' => 'selesai', 'name' => 'Selesai / Dikirim'],
+    const WORKFLOW_TEMPLATES = [
+        'apparel' => [
+            ['id' => 'desain', 'name' => 'Desain & Mockup'],
+            ['id' => 'potong', 'name' => 'Potong Kain'],
+            ['id' => 'sablon_bordir', 'name' => 'Sablon / Bordir'],
+            ['id' => 'jahit', 'name' => 'Jahit & Perakitan'],
+            ['id' => 'qc_packing', 'name' => 'Finishing & QC Packing'],
+            ['id' => 'selesai', 'name' => 'Selesai / Siap Kirim'],
+        ],
+        'merchandise' => [
+            ['id' => 'desain', 'name' => 'Desain & Layout Cetak'],
+            ['id' => 'cetak_bordir', 'name' => 'Cetak / Bordir'],
+            ['id' => 'perakitan', 'name' => 'Finishing & Perakitan'],
+            ['id' => 'qc_packing', 'name' => 'QC & Packing'],
+            ['id' => 'selesai', 'name' => 'Selesai / Siap Kirim'],
+        ],
+        'percetakan' => [
+            ['id' => 'desain', 'name' => 'Layout & Proofing'],
+            ['id' => 'cetak', 'name' => 'Cetak Cover & Isi'],
+            ['id' => 'jilid', 'name' => 'Jilid / Binding & Finishing'],
+            ['id' => 'qc_packing', 'name' => 'QC & Pengemasan'],
+            ['id' => 'selesai', 'name' => 'Selesai / Siap Kirim'],
+        ],
     ];
+
+    public static function resolveWorkflowStages(string $category): array
+    {
+        $cat = strtolower($category);
+        if (str_contains($cat, 'buku') || str_contains($cat, 'agenda') || str_contains($cat, 'cetak') || str_contains($cat, 'blocknote')) {
+            return self::WORKFLOW_TEMPLATES['percetakan'];
+        }
+        if (str_contains($cat, 'id card') || str_contains($cat, 'pin') || str_contains($cat, 'slempang') || str_contains($cat, 'lanyard') || str_contains($cat, 'merchandise')) {
+            return self::WORKFLOW_TEMPLATES['merchandise'];
+        }
+        return self::WORKFLOW_TEMPLATES['apparel'];
+    }
 
     public function index(Request $request): JsonResponse
     {
@@ -75,13 +103,14 @@ class OrderController extends Controller
                 'notes' => $validated['notes'] ?? null,
             ]);
 
-            // Buat 6 Tahapan Default
-            foreach (self::DEFAULT_STAGES as $idx => $stg) {
+            // Buat Tahapan Sesuai Kategori Produk (Apparel, Merchandise, atau Percetakan)
+            $stagesToCreate = self::resolveWorkflowStages($order->category);
+            foreach ($stagesToCreate as $idx => $stg) {
                 StageUpdate::create([
                     'order_id' => $order->id,
                     'stage_id' => $stg['id'],
                     'stage_name' => $stg['name'],
-                    'notes' => $idx === 0 ? 'Pesanan berhasil didaftarkan.' : null,
+                    'notes' => $idx === 0 ? 'Pesanan berhasil didaftarkan di sistem.' : null,
                     'photos' => [],
                     'completed' => false,
                     'current' => $idx === 0,
@@ -197,13 +226,16 @@ class OrderController extends Controller
             }
         }
 
-        // Cari index tahapan
-        $stageIndex = array_search($stageId, array_column(self::DEFAULT_STAGES, 'id'));
+        // Cari index tahapan langsung dari stageUpdates pesanan
+        $targetStage = $order->stageUpdates->firstWhere('stage_id', $stageId);
+        $stageIndex = $order->stageUpdates->search(function ($item) use ($stageId) {
+            return $item->stage_id === $stageId;
+        });
         if ($stageIndex === false) {
             $stageIndex = 0;
         }
 
-        $stageName = self::DEFAULT_STAGES[$stageIndex]['name'];
+        $stageName = $targetStage ? $targetStage->stage_name : ucwords(str_replace('_', ' ', $stageId));
         $isCompleted = ($stageId === 'selesai');
 
         // Update semua stages

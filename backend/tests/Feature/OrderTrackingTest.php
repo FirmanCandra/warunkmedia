@@ -83,5 +83,30 @@ class OrderTrackingTest extends TestCase
             'total_amount' => 50 * 65000,
         ]);
     }
+
+    public function test_can_create_merchandise_order_with_dynamic_stages(): void
+    {
+        $payload = [
+            'customer_name' => 'Panitia Wisuda Undip',
+            'customer_phone' => '085711223344',
+            'product_name' => 'Slempang Wisuda Bludru Bordir Emas',
+            'category' => 'Slempang Wisuda',
+            'quantity' => 30,
+            'deadline' => '2026-12-05',
+            'notes' => 'Bahan bludru hitam, font monotype corsiva emas, list pita rumbai.',
+        ];
+
+        $response = $this->postJson('/api/orders', $payload);
+
+        $response->assertStatus(201)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.product_name', 'Slempang Wisuda Bludru Bordir Emas')
+            ->assertJsonCount(5, 'data.stage_updates');
+
+        $this->assertDatabaseHas('orders', [
+            'customer_name' => 'Panitia Wisuda Undip',
+            'category' => 'Slempang Wisuda',
+        ]);
+    }
 }
 

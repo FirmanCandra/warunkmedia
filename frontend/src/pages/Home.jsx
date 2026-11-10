@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Search, MessageSquare, CheckCircle2, 
   Camera, Calendar, FileSpreadsheet, Shirt, Layers, 
-  Briefcase, HardHat, Package, ChevronRight, ChevronLeft, Clock
+  Briefcase, HardHat, Package, ChevronRight, ChevronLeft, Clock,
+  CreditCard, Award, BookOpen, Sparkles
 } from 'lucide-react';
 import { PRODUCTS, WORKFLOW_STEPS, PRODUCTION_STAGES, PRODUCTION_GALLERY } from '../data/mockData';
 
@@ -57,12 +58,16 @@ export default function Home() {
 
   const getProductIcon = (iconName) => {
     switch (iconName) {
-      case 'Shirt': return <Shirt className="w-5 h-5 text-primary" />;
-      case 'Layers': return <Layers className="w-5 h-5 text-primary" />;
-      case 'Briefcase': return <Briefcase className="w-5 h-5 text-primary" />;
-      case 'HardHat': return <HardHat className="w-5 h-5 text-primary" />;
-      case 'Package': return <Package className="w-5 h-5 text-primary" />;
-      default: return <Shirt className="w-5 h-5 text-primary" />;
+      case 'Shirt': return <Shirt className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />;
+      case 'Layers': return <Layers className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />;
+      case 'Briefcase': return <Briefcase className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />;
+      case 'HardHat': return <HardHat className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />;
+      case 'CreditCard': return <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />;
+      case 'Award': return <Award className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />;
+      case 'BookOpen': return <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />;
+      case 'Sparkles': return <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />;
+      case 'Package': return <Package className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />;
+      default: return <Package className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />;
     }
   };
 
@@ -203,22 +208,42 @@ export default function Home() {
                   </button>
                 </form>
               </div>
-              <div className="mt-2.5 pt-2 border-t border-line/60 text-[11px] text-muted flex items-center gap-1">
+              <div className="mt-2.5 pt-2 border-t border-line/60 text-[11px] text-muted flex flex-wrap items-center gap-1">
                 <span>Contoh:</span>
                 <button
                   type="button"
                   onClick={() => setQuickCode('WM-0012')}
                   className="text-primary font-mono hover:underline font-semibold"
+                  title="Kaos Angkatan"
                 >
                   WM-0012
                 </button>
                 <span>·</span>
                 <button
                   type="button"
-                  onClick={() => setQuickCode('WM-0009')}
+                  onClick={() => setQuickCode('WM-0021')}
                   className="text-primary font-mono hover:underline font-semibold"
+                  title="ID Card & Lanyard"
                 >
-                  WM-0009
+                  WM-0021
+                </button>
+                <span>·</span>
+                <button
+                  type="button"
+                  onClick={() => setQuickCode('WM-0024')}
+                  className="text-primary font-mono hover:underline font-semibold"
+                  title="Slempang Wisuda"
+                >
+                  WM-0024
+                </button>
+                <span>·</span>
+                <button
+                  type="button"
+                  onClick={() => setQuickCode('WM-0028')}
+                  className="text-primary font-mono hover:underline font-semibold"
+                  title="Buku Tahunan"
+                >
+                  WM-0028
                 </button>
               </div>
             </div>
