@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\TrackingController;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,11 @@ Route::post('/orders', [OrderController::class, 'store']);
 Route::put('/orders/{id}', [OrderController::class, 'update']);
 Route::delete('/orders/{id}', [OrderController::class, 'destroy']);
 Route::post('/orders/{id}/stage-update', [OrderController::class, 'updateStage']);
+
+// Customer / Participant Routes
+Route::get('/customers', [CustomerController::class, 'index']);
+Route::post('/customers', [CustomerController::class, 'store']);
+Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
 
 // Authenticated Routes
 Route::middleware('auth:sanctum')->group(function () {

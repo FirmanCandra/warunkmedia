@@ -76,7 +76,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
-          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, bcmath, fileinfo
+          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_sqlite, sqlite3, pdo_mysql, bcmath, fileinfo
           coverage: none
 
       - name: Check Backend Directory
@@ -104,13 +104,25 @@ jobs:
           cd "$DIR"
           composer install --prefer-dist --no-progress --no-interaction
 
+      - name: Prepare Laravel Environment
+        if: steps.check_backend.outputs.backend_exists == 'true' || steps.check_backend.outputs.root_backend == 'true'
+        run: |
+          DIR="${{ steps.check_backend.outputs.backend_exists == 'true' && 'backend' || '.' }}"
+          cd "$DIR"
+          if [ -f "artisan" ]; then
+            cp .env.example .env
+            php artisan key:generate
+            mkdir -p database
+            touch database/database.sqlite
+          fi
+
       - name: Run Backend Tests
         if: steps.check_backend.outputs.backend_exists == 'true' || steps.check_backend.outputs.root_backend == 'true'
         run: |
           DIR="${{ steps.check_backend.outputs.backend_exists == 'true' && 'backend' || '.' }}"
           cd "$DIR"
           if [ -f "artisan" ]; then
-            php artisan test || ./vendor/bin/phpunit
+            php artisan test
           else
             ./vendor/bin/phpunit
           fi
