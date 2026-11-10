@@ -80,7 +80,6 @@ export default function CheckProject({ orders = INITIAL_ORDERS }) {
             onClick={() => {
               setInputCode('WM-0012');
               setSearchParams({ code: 'WM-0012' });
-              lookupOrder('WM-0012');
             }}
             className="px-2 py-0.5 rounded bg-canvas border border-line hover:border-primary text-primary font-mono font-semibold"
           >
@@ -91,7 +90,6 @@ export default function CheckProject({ orders = INITIAL_ORDERS }) {
             onClick={() => {
               setInputCode('WM-0009');
               setSearchParams({ code: 'WM-0009' });
-              lookupOrder('WM-0009');
             }}
             className="px-2 py-0.5 rounded bg-canvas border border-line hover:border-primary text-primary font-mono font-semibold"
           >
@@ -102,7 +100,6 @@ export default function CheckProject({ orders = INITIAL_ORDERS }) {
             onClick={() => {
               setInputCode('WM-0015');
               setSearchParams({ code: 'WM-0015' });
-              lookupOrder('WM-0015');
             }}
             className="px-2 py-0.5 rounded bg-canvas border border-line hover:border-primary text-primary font-mono font-semibold"
           >

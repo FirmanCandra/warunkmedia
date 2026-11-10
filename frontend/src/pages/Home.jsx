@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Search, MessageSquare, CheckCircle2, 
   Camera, Calendar, FileSpreadsheet, Shirt, Layers, 
-  Briefcase, HardHat, Package, ChevronRight, ChevronLeft, Clock
+  Briefcase, HardHat, Package, ChevronRight, ChevronLeft, Clock, MapPin
 } from 'lucide-react';
 import { PRODUCTS, WORKFLOW_STEPS, PRODUCTION_STAGES, PRODUCTION_GALLERY } from '../data/mockData';
 
@@ -67,17 +67,22 @@ export default function Home() {
   };
 
   return (
-    <div className="space-y-12 sm:space-y-16 pb-12">
-      {/* Strip Lokasi Semarang Mobile */}
-      <div className="md:hidden bg-primary text-white text-xs px-4 py-2 flex items-center justify-between">
-        <span className="font-semibold">Warunk Media — Semarang</span>
-        <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded">Tracking Pesanan</span>
+    <div className="space-y-8 sm:space-y-12 pb-28 md:pb-16 overflow-x-hidden">
+      {/* Strip Lokasi Semarang Mobile (Wireframe Hal 10 & 12) */}
+      <div className="md:hidden bg-primary text-white text-xs px-4 py-2 flex items-center justify-between shadow-xs">
+        <div className="flex items-center gap-1.5 font-semibold">
+          <MapPin className="w-3.5 h-3.5 text-white/90" />
+          <span>Warunk Media — Semarang</span>
+        </div>
+        <a href="#kontak" className="text-[11px] text-white/90 hover:underline">
+          Info Workshop &gt;
+        </a>
       </div>
 
       {/* 1. HERO SECTION (Layout Mengacu Referensi GajahPrint & Wireframe Hal 11) */}
-      <section className="max-w-[1120px] mx-auto px-4 pt-4 sm:pt-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
-          {/* Kiri: Daftar Kategori Produk (Hidden di HP sangat kecil, terlihat di tablet/desktop) */}
+      <section className="max-w-[1120px] mx-auto px-3 sm:px-4 pt-2 sm:pt-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-stretch">
+          {/* Kiri: Daftar Kategori Produk - DESKTOP ONLY */}
           <div className="hidden lg:flex lg:col-span-3 bg-surface rounded-card border border-line p-4 shadow-xs flex-col justify-between">
             <div>
               <h3 className="font-heading font-bold text-sm text-ink mb-3 pb-2 border-b border-line flex items-center justify-between">
@@ -110,10 +115,10 @@ export default function Home() {
           </div>
 
           {/* Tengah: Banner Carousel Grafis (Revisi Garis Biru Sesuai Referensi Gambar 2) */}
-          <div className="lg:col-span-6 relative rounded-card overflow-hidden border border-line shadow-sm group bg-black/5 flex flex-col justify-center">
+          <div className="lg:col-span-6 relative rounded-card overflow-hidden border border-line shadow-xs group bg-canvas flex flex-col justify-center">
             {/* Slide Gambar Banner */}
             <div 
-              className="relative w-full aspect-[2/1] cursor-pointer overflow-hidden"
+              className="relative w-full aspect-[2/1] min-h-[170px] sm:min-h-[220px] cursor-pointer overflow-hidden"
               onClick={() => navigate(`/cek-projek?code=${BANNER_SLIDES[currentSlide].code}`)}
               title="Klik untuk cek demo projek"
             >
@@ -127,7 +132,7 @@ export default function Home() {
                   <img
                     src={slide.image}
                     alt={slide.alt}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover select-none"
                     loading={idx === 0 ? 'eager' : 'lazy'}
                   />
                 </div>
@@ -135,7 +140,7 @@ export default function Home() {
             </div>
 
             {/* Kontrol Carousel di Bagian Bawah Kanan (GajahPrint Style) */}
-            <div className="absolute bottom-3 right-3 z-20 flex items-center gap-1.5">
+            <div className="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 z-20 flex items-center gap-1 sm:gap-1.5">
               <button
                 type="button"
                 onClick={(e) => {
@@ -143,9 +148,9 @@ export default function Home() {
                   prevSlide();
                 }}
                 aria-label="Slide sebelumnya"
-                className="w-7 h-7 rounded-full bg-black/50 hover:bg-black/80 text-white flex items-center justify-center transition-all backdrop-blur-xs active:scale-95 shadow-sm"
+                className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center transition-all active:scale-95 shadow-sm"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
               <button
                 type="button"
@@ -154,14 +159,14 @@ export default function Home() {
                   nextSlide();
                 }}
                 aria-label="Slide berikutnya"
-                className="w-7 h-7 rounded-full bg-black/50 hover:bg-black/80 text-white flex items-center justify-center transition-all backdrop-blur-xs active:scale-95 shadow-sm"
+                className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center transition-all active:scale-95 shadow-sm"
               >
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
             </div>
 
             {/* Indikator Titik Carousel di Tengah Bawah */}
-            <div className="absolute bottom-3.5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5">
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5">
               {BANNER_SLIDES.map((slide, idx) => (
                 <button
                   key={slide.id}
@@ -173,7 +178,7 @@ export default function Home() {
                   aria-label={`Ke slide ${idx + 1}`}
                   className={`h-1.5 rounded-full transition-all duration-300 ${
                     idx === currentSlide 
-                      ? 'w-6 bg-primary' 
+                      ? 'w-5 sm:w-6 bg-primary' 
                       : 'w-2 bg-white/70 hover:bg-white'
                   }`}
                 />
@@ -182,32 +187,34 @@ export default function Home() {
           </div>
 
           {/* Kanan: Dua Kartu Cepat (Cek Projek & Tanya WhatsApp) */}
-          <div className="lg:col-span-3 flex flex-col gap-4">
+          <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 sm:gap-4">
             {/* Kartu Input Cek Projek Cepat */}
-            <div className="bg-surface rounded-card border border-line p-5 shadow-xs flex-1">
-              <h3 className="font-heading font-bold text-sm text-ink mb-1 flex items-center gap-1.5">
-                <Search className="w-4 h-4 text-primary" />
-                <span>Cek Projek</span>
-              </h3>
-              <p className="text-xs text-muted mb-3">
-                Masukkan kode pesanan untuk melihat progres terkini.
-              </p>
-              <form onSubmit={handleQuickCheck} className="space-y-2.5">
-                <input
-                  type="text"
-                  value={quickCode}
-                  onChange={(e) => setQuickCode(e.target.value)}
-                  placeholder="Kode, mis: WM-0012"
-                  className="w-full px-3 py-2 text-xs bg-canvas border border-line rounded-control focus:outline-none focus:ring-2 focus:ring-primary uppercase font-mono"
-                />
-                <button
-                  type="submit"
-                  className="w-full py-2 bg-primary hover:bg-primary-dark text-white text-xs font-semibold rounded-control transition-colors"
-                >
-                  Cek Pesanan
-                </button>
-              </form>
-              <div className="mt-2.5 text-[11px] text-muted flex items-center gap-1">
+            <div className="bg-surface rounded-card border border-line p-4 sm:p-5 shadow-xs flex flex-col justify-between">
+              <div>
+                <h3 className="font-heading font-bold text-sm text-ink mb-1 flex items-center gap-1.5">
+                  <Search className="w-4 h-4 text-primary" />
+                  <span>Cek Projek</span>
+                </h3>
+                <p className="text-[11px] sm:text-xs text-muted mb-2.5">
+                  Masukkan kode pesanan untuk melihat progres terkini.
+                </p>
+                <form onSubmit={handleQuickCheck} className="space-y-2">
+                  <input
+                    type="text"
+                    value={quickCode}
+                    onChange={(e) => setQuickCode(e.target.value)}
+                    placeholder="Kode, mis: WM-0012"
+                    className="w-full px-3 py-2 text-xs bg-canvas border border-line rounded-control focus:outline-none focus:ring-2 focus:ring-primary uppercase font-mono"
+                  />
+                  <button
+                    type="submit"
+                    className="w-full py-2 bg-primary hover:bg-primary-dark text-white text-xs font-semibold rounded-control transition-colors shadow-xs"
+                  >
+                    Cek Pesanan
+                  </button>
+                </form>
+              </div>
+              <div className="mt-2.5 pt-2 border-t border-line/60 text-[11px] text-muted flex items-center gap-1">
                 <span>Contoh:</span>
                 <button
                   type="button"
@@ -228,74 +235,100 @@ export default function Home() {
             </div>
 
             {/* Kartu Tanya WhatsApp */}
-            <div className="bg-surface rounded-card border border-line p-5 shadow-xs">
-              <h3 className="font-heading font-bold text-sm text-ink mb-1 flex items-center gap-1.5">
-                <MessageSquare className="w-4 h-4 text-brand-green" />
-                <span>Tanya via WhatsApp</span>
-              </h3>
-              <p className="text-xs text-muted mb-3">
-                Hubungi owner Warunk Media untuk pemesanan baru atau konsultasi bahan.
-              </p>
+            <div className="bg-surface rounded-card border border-line p-4 sm:p-5 shadow-xs flex flex-col justify-between">
+              <div>
+                <h3 className="font-heading font-bold text-sm text-ink mb-1 flex items-center gap-1.5">
+                  <MessageSquare className="w-4 h-4 text-brand-green" />
+                  <span>Tanya via WhatsApp</span>
+                </h3>
+                <p className="text-[11px] sm:text-xs text-muted mb-3 leading-relaxed">
+                  Hubungi owner Warunk Media untuk pemesanan baru atau konsultasi bahan.
+                </p>
+              </div>
               <a
                 href="https://wa.me/6281234567890?text=Halo%20Warunk%20Media,%20saya%20ingin%20konsultasi%20pesanan%20konveksi"
                 target="_blank"
                 rel="noreferrer"
                 className="w-full py-2 px-3 bg-canvas hover:bg-line text-ink text-xs font-semibold rounded-control border border-line flex items-center justify-center gap-2 transition-colors"
               >
-                <MessageSquare className="w-4 h-4 text-brand-green" />
-                <span>Chat Owner (0812-3456-7890)</span>
+                <MessageSquare className="w-4 h-4 text-brand-green shrink-0" />
+                <span className="truncate">Chat Owner (0812-3456-7890)</span>
               </a>
             </div>
+          </div>
+        </div>
+
+        {/* PRODUK KAMI - GRID MOBILE ONLY (Sesuai Wireframe Hal 10 & 12) */}
+        <div className="lg:hidden mt-5 bg-surface rounded-card border border-line p-3.5 shadow-xs">
+          <div className="flex items-center justify-between mb-3 pb-2 border-b border-line">
+            <span className="font-heading font-bold text-xs text-ink uppercase tracking-wider">Produk Kami</span>
+            <span className="text-[10px] text-muted">Min. Order 24 pcs</span>
+          </div>
+          <div className="grid grid-cols-5 gap-2 text-center">
+            {PRODUCTS.map((prod) => (
+              <a
+                key={prod.id}
+                href="#produk-kami"
+                className="flex flex-col items-center p-1.5 rounded-lg hover:bg-canvas transition-colors group"
+              >
+                <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-1 group-active:scale-95 transition-transform">
+                  {getProductIcon(prod.icon)}
+                </div>
+                <span className="text-[10px] font-semibold text-ink leading-tight truncate w-full">
+                  {prod.name.split(' ')[0]}
+                </span>
+              </a>
+            ))}
           </div>
         </div>
       </section>
 
       {/* 2. EMPAT KARTU KEUNGGULAN (Wireframe Hal 11 & design.md Section 12) */}
-      <section className="max-w-[1120px] mx-auto px-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-          <div className="bg-surface rounded-card border border-line p-4 sm:p-5 shadow-xs flex flex-col gap-2.5">
-            <div className="w-9 h-9 rounded-lg bg-primary text-white flex items-center justify-center">
-              <CheckCircle2 className="w-5 h-5" />
+      <section className="max-w-[1120px] mx-auto px-3 sm:px-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
+          <div className="bg-surface rounded-card border border-line p-3.5 sm:p-5 shadow-xs flex flex-col gap-2">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-primary text-white flex items-center justify-center shrink-0">
+              <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <h4 className="font-heading font-bold text-sm text-ink">Pantau Progres</h4>
-              <p className="text-xs text-muted mt-0.5 leading-relaxed">
+              <h4 className="font-heading font-bold text-xs sm:text-sm text-ink">Pantau Progres</h4>
+              <p className="text-[11px] sm:text-xs text-muted mt-0.5 leading-relaxed">
                 Lihat tahap pengerjaan pesanan kapan saja tanpa perlu chat manual.
               </p>
             </div>
           </div>
 
-          <div className="bg-surface rounded-card border border-line p-4 sm:p-5 shadow-xs flex flex-col gap-2.5">
-            <div className="w-9 h-9 rounded-lg bg-primary text-white flex items-center justify-center">
-              <Camera className="w-5 h-5" />
+          <div className="bg-surface rounded-card border border-line p-3.5 sm:p-5 shadow-xs flex flex-col gap-2">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-primary text-white flex items-center justify-center shrink-0">
+              <Camera className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <h4 className="font-heading font-bold text-sm text-ink">Foto Bukti</h4>
-              <p className="text-xs text-muted mt-0.5 leading-relaxed">
+              <h4 className="font-heading font-bold text-xs sm:text-sm text-ink">Foto Bukti</h4>
+              <p className="text-[11px] sm:text-xs text-muted mt-0.5 leading-relaxed">
                 Setiap tahap produksi (sablon, potong, jahit) disertai foto bukti real.
               </p>
             </div>
           </div>
 
-          <div className="bg-surface rounded-card border border-line p-4 sm:p-5 shadow-xs flex flex-col gap-2.5">
-            <div className="w-9 h-9 rounded-lg bg-primary text-white flex items-center justify-center">
-              <Calendar className="w-5 h-5" />
+          <div className="bg-surface rounded-card border border-line p-3.5 sm:p-5 shadow-xs flex flex-col gap-2">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-primary text-white flex items-center justify-center shrink-0">
+              <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <h4 className="font-heading font-bold text-sm text-ink">Deadline Jelas</h4>
-              <p className="text-xs text-muted mt-0.5 leading-relaxed">
+              <h4 className="font-heading font-bold text-xs sm:text-sm text-ink">Deadline Jelas</h4>
+              <p className="text-[11px] sm:text-xs text-muted mt-0.5 leading-relaxed">
                 Estimasi tanggal selesai terdata transparan sejak awal pemesanan.
               </p>
             </div>
           </div>
 
-          <div className="bg-surface rounded-card border border-line p-4 sm:p-5 shadow-xs flex flex-col gap-2.5">
-            <div className="w-9 h-9 rounded-lg bg-primary text-white flex items-center justify-center">
-              <FileSpreadsheet className="w-5 h-5" />
+          <div className="bg-surface rounded-card border border-line p-3.5 sm:p-5 shadow-xs flex flex-col gap-2">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-primary text-white flex items-center justify-center shrink-0">
+              <FileSpreadsheet className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <h4 className="font-heading font-bold text-sm text-ink">Worksheet & Invoice</h4>
-              <p className="text-xs text-muted mt-0.5 leading-relaxed">
+              <h4 className="font-heading font-bold text-xs sm:text-sm text-ink">Worksheet & Invoice</h4>
+              <p className="text-[11px] sm:text-xs text-muted mt-0.5 leading-relaxed">
                 Dokumen rincian ukuran, spesifikasi bahan, dan invoice resmi siap cetak.
               </p>
             </div>
@@ -304,65 +337,65 @@ export default function Home() {
       </section>
 
       {/* 3. ALUR PROJEK (4 LANGKAH) */}
-      <section id="alur-projek" className="max-w-[1120px] mx-auto px-4 scroll-mt-24">
-        <div className="flex items-center justify-between pb-3 mb-6 border-b border-line">
+      <section id="alur-projek" className="max-w-[1120px] mx-auto px-3 sm:px-4 scroll-mt-24">
+        <div className="flex items-center justify-between pb-3 mb-4 sm:mb-6 border-b border-line">
           <div>
-            <h2 className="font-heading font-bold text-xl sm:text-2xl text-ink">Alur Projek</h2>
-            <p className="text-xs sm:text-sm text-muted">Proses dari awal pemesanan hingga barang diterima</p>
+            <h2 className="font-heading font-bold text-lg sm:text-2xl text-ink">Alur Projek</h2>
+            <p className="text-[11px] sm:text-xs text-muted">Proses dari awal pemesanan hingga barang diterima</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {WORKFLOW_STEPS.map((step) => (
             <div
               key={step.step}
-              className="bg-surface rounded-card border border-line p-5 shadow-xs relative"
+              className="bg-surface rounded-card border border-line p-4 sm:p-5 shadow-xs relative"
             >
-              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary font-heading font-black text-sm flex items-center justify-center mb-3">
+              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary font-heading font-black text-sm flex items-center justify-center mb-2.5">
                 {step.step}
               </div>
-              <h4 className="font-heading font-bold text-base text-ink mb-1.5">{step.title}</h4>
-              <p className="text-xs text-muted leading-relaxed">{step.desc}</p>
+              <h4 className="font-heading font-bold text-sm sm:text-base text-ink mb-1">{step.title}</h4>
+              <p className="text-[11px] sm:text-xs text-muted leading-relaxed">{step.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* 4. PROSES PROJEK (5 TAHAPAN PRODUKSI KONVEKSI) */}
-      <section id="proses-projek" className="max-w-[1120px] mx-auto px-4 scroll-mt-24">
-        <div className="flex items-center justify-between pb-3 mb-6 border-b border-line">
+      {/* 4. PROSES PROJEK (6 TAHAPAN PRODUKSI KONVEKSI) */}
+      <section id="proses-projek" className="max-w-[1120px] mx-auto px-3 sm:px-4 scroll-mt-24">
+        <div className="flex items-center justify-between pb-3 mb-4 sm:mb-6 border-b border-line">
           <div>
-            <h2 className="font-heading font-bold text-xl sm:text-2xl text-ink">Proses Projek</h2>
-            <p className="text-xs sm:text-sm text-muted">Tahapan produksi standar workshop Warunk Media Semarang</p>
+            <h2 className="font-heading font-bold text-lg sm:text-2xl text-ink">Proses Projek</h2>
+            <p className="text-[11px] sm:text-xs text-muted">Tahapan produksi standar workshop Warunk Media Semarang</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3">
           {PRODUCTION_STAGES.map((stg, idx) => (
             <div
               key={stg.id}
-              className="bg-surface rounded-card border border-line p-4 text-center shadow-xs hover:border-primary/50 transition-colors"
+              className="bg-surface rounded-card border border-line p-3 sm:p-4 text-center shadow-xs hover:border-primary/50 transition-colors"
             >
               <div className="w-6 h-6 rounded-full bg-canvas border border-line text-ink font-bold text-xs flex items-center justify-center mx-auto mb-2">
                 {idx + 1}
               </div>
               <h5 className="font-heading font-bold text-xs sm:text-sm text-ink mb-1">{stg.name}</h5>
-              <p className="text-[11px] text-muted line-clamp-3 leading-tight">{stg.desc}</p>
+              <p className="text-[10px] sm:text-[11px] text-muted line-clamp-3 leading-tight">{stg.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* 5. DEADLINE PROJEK (PENJELASAN ESTIMASI & DISIPLIN WAKTU) */}
-      <section id="deadline-projek" className="max-w-[1120px] mx-auto px-4 scroll-mt-24">
-        <div className="bg-[#1F1F1F] text-white rounded-card p-6 sm:p-8 shadow-xs">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      {/* 5. DEADLINE PROJEK */}
+      <section id="deadline-projek" className="max-w-[1120px] mx-auto px-3 sm:px-4 scroll-mt-24">
+        <div className="bg-[#1F1F1F] text-white rounded-card p-5 sm:p-8 shadow-xs">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5 sm:gap-6">
             <div className="space-y-2 max-w-2xl">
               <div className="flex items-center gap-2 text-brand-amber text-xs font-bold uppercase tracking-wider">
-                <Clock className="w-4 h-4" />
+                <Clock className="w-4 h-4 shrink-0" />
                 <span>Aturan & Estimasi Deadline</span>
               </div>
-              <h3 className="font-heading font-bold text-xl sm:text-2xl text-white">
+              <h3 className="font-heading font-bold text-lg sm:text-2xl text-white">
                 Deadline Terukur Berdasarkan Jumlah dan Tingkat Kerumitan
               </h3>
               <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
@@ -373,7 +406,7 @@ export default function Home() {
               href="https://wa.me/6281234567890?text=Halo%20Warunk%20Media,%20saya%20butuh%20konveksi%20dengan%20deadline%20khusus"
               target="_blank"
               rel="noreferrer"
-              className="px-5 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-control text-xs font-semibold whitespace-nowrap transition-colors"
+              className="w-full sm:w-auto text-center px-5 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-control text-xs font-semibold whitespace-nowrap transition-colors shadow-xs"
             >
               Konsultasi Deadline Khusus
             </a>
@@ -382,11 +415,11 @@ export default function Home() {
       </section>
 
       {/* 6. HASIL PRODUKSI (GALERI DOKUMENTASI KONVEKSI) */}
-      <section id="produk-kami" className="max-w-[1120px] mx-auto px-4">
-        <div className="flex items-center justify-between pb-3 mb-6 border-b border-line">
+      <section id="produk-kami" className="max-w-[1120px] mx-auto px-3 sm:px-4">
+        <div className="flex items-center justify-between pb-3 mb-4 sm:mb-6 border-b border-line">
           <div>
-            <h2 className="font-heading font-bold text-xl sm:text-2xl text-ink">Hasil Produksi</h2>
-            <p className="text-xs sm:text-sm text-muted">Contoh pesanan yang telah selesai diproduksi</p>
+            <h2 className="font-heading font-bold text-lg sm:text-2xl text-ink">Hasil Produksi</h2>
+            <p className="text-[11px] sm:text-xs text-muted">Contoh pesanan yang telah selesai diproduksi</p>
           </div>
           <a
             href="https://www.instagram.com/warunk_media/"
@@ -394,16 +427,17 @@ export default function Home() {
             rel="noreferrer"
             className="text-xs font-semibold text-primary hover:text-primary-dark flex items-center gap-1"
           >
-            <span>Lihat Instagram</span>
+            <span>Instagram</span>
             <ChevronRight className="w-4 h-4" />
           </a>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {/* Mobile: Horizontal Carousel (Wireframe Hal 10 & 12) | Desktop: Grid 4 Kolom */}
+        <div className="flex md:grid md:grid-cols-4 gap-3 sm:gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-2">
           {PRODUCTION_GALLERY.map((item) => (
             <div
               key={item.id}
-              className="group bg-surface rounded-card border border-line overflow-hidden shadow-xs hover:shadow-md transition-all"
+              className="min-w-[200px] sm:min-w-[240px] md:min-w-0 snap-start shrink-0 group bg-surface rounded-card border border-line overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
             >
               <div className="aspect-4/3 bg-canvas overflow-hidden">
                 <img
@@ -413,8 +447,8 @@ export default function Home() {
                   loading="lazy"
                 />
               </div>
-              <div className="p-3.5">
-                <span className="text-[10px] uppercase font-bold text-primary block mb-0.5">
+              <div className="p-3 sm:p-3.5">
+                <span className="text-[9px] sm:text-[10px] uppercase font-bold text-primary block mb-0.5">
                   {item.category}
                 </span>
                 <h5 className="font-heading font-bold text-xs sm:text-sm text-ink line-clamp-2">

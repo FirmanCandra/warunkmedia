@@ -7,12 +7,12 @@ export default function BottomNav({ currentUser }) {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-surface border-t border-line z-50 px-2 py-1 shadow-lg no-print">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-surface/95 backdrop-blur-md border-t border-line z-50 px-2 py-1.5 shadow-lg no-print pb-safe">
       <div className="flex items-center justify-around relative">
         {/* Beranda */}
         <Link
           to="/"
-          className={`flex flex-col items-center py-1 px-2 min-w-[56px] text-[11px] ${
+          className={`flex flex-col items-center py-1 px-2 min-w-[56px] text-[11px] transition-colors ${
             isActive('/') ? 'text-primary font-bold' : 'text-muted hover:text-ink'
           }`}
         >
@@ -23,7 +23,7 @@ export default function BottomNav({ currentUser }) {
         {/* Cek Projek */}
         <Link
           to="/cek-projek"
-          className={`flex flex-col items-center py-1 px-2 min-w-[56px] text-[11px] ${
+          className={`flex flex-col items-center py-1 px-2 min-w-[56px] text-[11px] transition-colors ${
             isActive('/cek-projek') ? 'text-primary font-bold' : 'text-muted hover:text-ink'
           }`}
         >
@@ -32,13 +32,13 @@ export default function BottomNav({ currentUser }) {
         </Link>
 
         {/* WhatsApp Menonjol di Tengah */}
-        <div className="relative -top-4 flex flex-col items-center">
+        <div className="relative -top-5 flex flex-col items-center">
           <a
             href="https://wa.me/6281234567890?text=Halo%20Warunk%20Media,%20saya%20mau%20tanya%20progres%20pesanan"
             target="_blank"
             rel="noreferrer"
             aria-label="Chat WhatsApp"
-            className="w-12 h-12 bg-primary hover:bg-primary-dark text-white rounded-full flex items-center justify-center shadow-md active:scale-95 transition-all"
+            className="w-12 h-12 bg-primary hover:bg-primary-dark text-white rounded-full flex items-center justify-center shadow-lg ring-4 ring-surface active:scale-95 transition-all"
           >
             <MessageSquare className="w-6 h-6 fill-white" />
           </a>
@@ -48,7 +48,7 @@ export default function BottomNav({ currentUser }) {
         {/* Berandaku */}
         <Link
           to="/berandaku"
-          className={`flex flex-col items-center py-1 px-2 min-w-[56px] text-[11px] ${
+          className={`flex flex-col items-center py-1 px-2 min-w-[56px] text-[11px] transition-colors ${
             isActive('/berandaku') ? 'text-primary font-bold' : 'text-muted hover:text-ink'
           }`}
         >
@@ -59,7 +59,7 @@ export default function BottomNav({ currentUser }) {
         {/* Akun / Admin */}
         <Link
           to={currentUser?.role === 'admin' ? '/admin' : currentUser ? '/berandaku' : '/login'}
-          className={`flex flex-col items-center py-1 px-2 min-w-[56px] text-[11px] ${
+          className={`flex flex-col items-center py-1 px-2 min-w-[56px] text-[11px] transition-colors ${
             isActive('/login') || isActive('/admin') ? 'text-primary font-bold' : 'text-muted hover:text-ink'
           }`}
         >
