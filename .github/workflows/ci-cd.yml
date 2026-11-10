@@ -1,0 +1,133 @@
+name: Warunk Media CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - production
+  pull_request:
+    branches:
+      - main
+      - production
+
+jobs:
+  frontend:
+    name: Frontend Quality & Build (React)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Check Frontend Directory
+        id: check_frontend
+        run: |
+          if [ -d "frontend" ] && [ -f "frontend/package.json" ]; then
+            echo "frontend_exists=true" >> $GITHUB_OUTPUT
+          elif [ -f "package.json" ]; then
+            echo "root_frontend=true" >> $GITHUB_OUTPUT
+          else
+            echo "frontend_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install Frontend Dependencies
+        if: steps.check_frontend.outputs.frontend_exists == 'true' || steps.check_frontend.outputs.root_frontend == 'true'
+        run: |
+          if [ "${{ steps.check_frontend.outputs.frontend_exists }}" = "true" ]; then
+            cd frontend && npm ci || npm install
+          else
+            npm ci || npm install
+          fi
+
+      - name: Lint Frontend
+        if: steps.check_frontend.outputs.frontend_exists == 'true' || steps.check_frontend.outputs.root_frontend == 'true'
+        run: |
+          DIR="${{ steps.check_frontend.outputs.frontend_exists == 'true' && 'frontend' || '.' }}"
+          if grep -q '"lint"' "$DIR/package.json"; then
+            npm --prefix "$DIR" run lint
+          else
+            echo "No lint script defined in package.json, skipping."
+          fi
+
+      - name: Build Frontend
+        if: steps.check_frontend.outputs.frontend_exists == 'true' || steps.check_frontend.outputs.root_frontend == 'true'
+        run: |
+          DIR="${{ steps.check_frontend.outputs.frontend_exists == 'true' && 'frontend' || '.' }}"
+          if grep -q '"build"' "$DIR/package.json"; then
+            npm --prefix "$DIR" run build
+          else
+            echo "No build script defined in package.json, skipping."
+          fi
+
+  backend:
+    name: Backend Quality & Tests (Laravel 12)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, bcmath, fileinfo
+          coverage: none
+
+      - name: Check Backend Directory
+        id: check_backend
+        run: |
+          if [ -d "backend" ] && [ -f "backend/composer.json" ]; then
+            echo "backend_exists=true" >> $GITHUB_OUTPUT
+          elif [ -f "composer.json" ]; then
+            echo "root_backend=true" >> $GITHUB_OUTPUT
+          else
+            echo "backend_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Validate Composer Files
+        if: steps.check_backend.outputs.backend_exists == 'true' || steps.check_backend.outputs.root_backend == 'true'
+        run: |
+          DIR="${{ steps.check_backend.outputs.backend_exists == 'true' && 'backend' || '.' }}"
+          cd "$DIR"
+          composer validate --strict
+
+      - name: Install Backend Dependencies
+        if: steps.check_backend.outputs.backend_exists == 'true' || steps.check_backend.outputs.root_backend == 'true'
+        run: |
+          DIR="${{ steps.check_backend.outputs.backend_exists == 'true' && 'backend' || '.' }}"
+          cd "$DIR"
+          composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Run Backend Tests
+        if: steps.check_backend.outputs.backend_exists == 'true' || steps.check_backend.outputs.root_backend == 'true'
+        run: |
+          DIR="${{ steps.check_backend.outputs.backend_exists == 'true' && 'backend' || '.' }}"
+          cd "$DIR"
+          if [ -f "artisan" ]; then
+            php artisan test || ./vendor/bin/phpunit
+          else
+            ./vendor/bin/phpunit
+          fi
+
+  deploy_production:
+    name: Production Release & Deploy Preparation
+    needs: [frontend, backend]
+    if: github.ref == 'refs/heads/production' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Production Ready Notice
+        run: |
+          echo "=========================================="
+          echo "Production branch updated successfully."
+          echo "All Frontend and Backend CI checks passed."
+          echo "Ready for production hosting deployment."
+          echo "=========================================="
