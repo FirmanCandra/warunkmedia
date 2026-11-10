@@ -68,3 +68,4 @@ When code is ready for live hosting:
 ## 3. CI/CD Monitoring
 - Monitor workflow runs on GitHub Actions: `https://github.com/FirmanCandra/warunkmedia/actions`
 - If any job fails (Frontend Lint/Build or Backend Tests), immediately investigate the failure logs, fix the issue locally, and push an update.
+

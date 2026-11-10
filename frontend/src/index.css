@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #B91C1C;
+  --color-primary-dark: #991B1B;
+  --color-secondary: #1F1F1F;
+  --color-ink: #1F1F1F;
+  
+  --color-brand-red: #B91C1C;
+  --color-brand-red-dark: #991B1B;
+  --color-brand-green: #2E9E44;
+  --color-brand-amber: #F5B400;
+
+  --color-surface: #FFFFFF;
+  --color-canvas: #F7F6F4;
+  --color-line: #E5E2DD;
+  --color-muted: #5F5B55;
+
+  --font-heading: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+
+  --radius-card: 16px;
+  --radius-control: 10px;
+  --max-w-content: 1120px;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: #F7F6F4;
+  color: #1F1F1F;
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+/* Print styling for Invoice & Worksheet */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background-color: #ffffff !important;
+  }
+  .print-only-shadow-none {
+    box-shadow: none !important;
+    border: none !important;
+  }
+}

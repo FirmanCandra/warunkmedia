@@ -32,3 +32,4 @@
 - **Roles**: Public Visitor, Customer (Participant), and Owner/Admin.
 - **Core Modules**: Order Tracking (via code), Customer Dashboard (Berandaku), Admin Order & Stage Manager with photo upload, Order Worksheet, and Invoice display/print.
 - **Explicit Exclusions**: Online payment gateway is excluded in this phase.
+
