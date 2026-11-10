@@ -5,7 +5,7 @@ export default function TimelineProgress({ timeline = [], currentStageIndex = 0 
   const [selectedPhoto, setSelectedPhoto] = useState(null);
 
   return (
-    <div className="relative pl-6 sm:pl-8 space-y-8 before:absolute before:left-3 sm:before:left-4 before:top-3 before:bottom-3 before:w-0.5 before:bg-line">
+    <div className="relative pl-7 sm:pl-8 space-y-5 sm:space-y-7 before:absolute before:left-3.5 sm:before:left-4 before:top-3 before:bottom-3 before:w-0.5 before:bg-line">
       {timeline.map((step, idx) => {
         const isCompleted = idx < currentStageIndex || step.completed;
         const isCurrent = idx === currentStageIndex && !step.completed;
@@ -14,7 +14,7 @@ export default function TimelineProgress({ timeline = [], currentStageIndex = 0 
           <div key={step.stageId || idx} className="relative group">
             {/* Dot Indikator Status */}
             <div
-              className={`absolute -left-6 sm:-left-8 top-0.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center border-2 transition-all ${
+              className={`absolute -left-7 sm:-left-8 top-1 w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all shrink-0 ${
                 isCompleted
                   ? 'bg-brand-green border-brand-green text-white shadow-xs'
                   : isCurrent
@@ -32,25 +32,25 @@ export default function TimelineProgress({ timeline = [], currentStageIndex = 0 
             </div>
 
             {/* Konten Tahapan */}
-            <div className="bg-surface p-4 sm:p-5 rounded-card border border-line shadow-xs">
+            <div className="bg-surface p-3.5 sm:p-5 rounded-card border border-line shadow-xs min-w-0">
               <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
-                <div className="flex items-center gap-2">
-                  <h4 className="font-heading font-bold text-base text-ink">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h4 className="font-heading font-bold text-sm sm:text-base text-ink">
                     {step.stageName}
                   </h4>
                   {isCurrent && (
-                    <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-[#FDF0C4] text-[#5B4300] border border-[#F5B400]/30">
+                    <span className="px-2 py-0.5 text-[11px] sm:text-xs font-semibold rounded-full bg-[#FDF0C4] text-[#5B4300] border border-[#F5B400]/30">
                       Sedang Berjalan
                     </span>
                   )}
                   {isCompleted && (
-                    <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-[#DDF3E1] text-[#14532D] border border-brand-green/30">
+                    <span className="px-2 py-0.5 text-[11px] sm:text-xs font-semibold rounded-full bg-[#DDF3E1] text-[#14532D] border border-brand-green/30">
                       Selesai
                     </span>
                   )}
                 </div>
                 {step.date && (
-                  <span className="text-xs text-muted flex items-center gap-1">
+                  <span className="text-[11px] sm:text-xs text-muted flex items-center gap-1">
                     <Clock className="w-3.5 h-3.5" />
                     {step.date}
                   </span>
@@ -59,7 +59,7 @@ export default function TimelineProgress({ timeline = [], currentStageIndex = 0 
 
               {/* Catatan Owner */}
               {step.note ? (
-                <p className="text-sm text-ink/80 mt-1 leading-relaxed bg-canvas/60 p-2.5 rounded-lg border border-line/60">
+                <p className="text-xs sm:text-sm text-ink/80 mt-1 leading-relaxed bg-canvas/60 p-2 sm:p-2.5 rounded-lg border border-line/60">
                   {step.note}
                 </p>
               ) : (
@@ -72,7 +72,7 @@ export default function TimelineProgress({ timeline = [], currentStageIndex = 0 
                   <div className="text-xs font-semibold text-muted mb-2 flex items-center gap-1">
                     <span>Foto Bukti Produksi ({step.photos.length}):</span>
                   </div>
-                  <div className="flex flex-wrap gap-2.5">
+                  <div className="flex flex-wrap gap-2">
                     {step.photos.map((photoUrl, pIdx) => (
                       <button
                         key={pIdx}
@@ -83,11 +83,11 @@ export default function TimelineProgress({ timeline = [], currentStageIndex = 0 
                         <img
                           src={photoUrl}
                           alt={`Bukti ${step.stageName} ${pIdx + 1}`}
-                          className="w-20 h-20 sm:w-24 sm:h-24 object-cover group-hover/img:scale-105 transition-transform"
+                          className="w-16 h-16 sm:w-24 sm:h-24 object-cover group-hover/img:scale-105 transition-transform"
                           loading="lazy"
                         />
                         <div className="absolute inset-0 bg-black/30 opacity-0 group-hover/img:opacity-100 flex items-center justify-center transition-opacity text-white">
-                          <ZoomIn className="w-5 h-5" />
+                          <ZoomIn className="w-4 h-4 sm:w-5 sm:h-5" />
                         </div>
                       </button>
                     ))}
@@ -102,7 +102,7 @@ export default function TimelineProgress({ timeline = [], currentStageIndex = 0 
       {/* Modal Zoom Foto */}
       {selectedPhoto && (
         <div
-          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-xs"
+          className="fixed inset-0 z-60 bg-black/80 flex items-center justify-center p-4 backdrop-blur-xs"
           onClick={() => setSelectedPhoto(null)}
         >
           <div

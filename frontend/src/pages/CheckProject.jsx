@@ -128,7 +128,7 @@ export default function CheckProject({ orders = INITIAL_ORDERS }) {
       {activeOrder && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Kolom Kiri: Ringkasan Pesanan (Wireframe Hal 6 & 8) */}
-          <div className="lg:col-span-4 bg-surface rounded-card border border-line p-5 sm:p-6 shadow-xs space-y-5 sticky top-24">
+          <div className="lg:col-span-4 bg-surface rounded-card border border-line p-5 sm:p-6 shadow-xs space-y-5 lg:sticky lg:top-24">
             <div>
               <span
                 className={`inline-block px-3 py-1 rounded-full text-xs font-semibold border mb-2 ${getBadgeStyle(

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Search, Phone, User, LogOut } from 'lucide-react';
-import InstagramIcon from './InstagramIcon';
+import { Search, User, LogOut } from 'lucide-react';
 
 export default function Navbar({ currentUser, onLogout }) {
   const [searchCode, setSearchCode] = useState('');
@@ -22,39 +21,7 @@ export default function Navbar({ currentUser, onLogout }) {
 
   return (
     <header className="w-full bg-surface sticky top-0 z-40 border-b border-line shadow-xs">
-      {/* 1. Top Bar Merah Tipis */}
-      <div className="bg-primary text-white text-[11px] sm:text-xs py-1 px-3 sm:px-4">
-        <div className="max-w-[1120px] mx-auto flex items-center justify-between gap-2">
-          <div className="flex items-center gap-3 sm:gap-4 overflow-hidden">
-            <a
-              href="https://www.instagram.com/warunk_media/"
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-1.5 hover:text-white/80 transition-colors shrink-0"
-            >
-              <InstagramIcon className="w-3.5 h-3.5 shrink-0" />
-              <span className="truncate">@warunk_media</span>
-            </a>
-            <span className="text-white/40">|</span>
-            <a
-              href="https://wa.me/6281234567890?text=Halo%20Warunk%20Media,%20saya%20ingin%20tanya%20projek%20konveksi"
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-1.5 hover:text-white/80 transition-colors shrink-0"
-            >
-              <Phone className="w-3.5 h-3.5 shrink-0" />
-              <span>0812-3456-7890</span>
-            </a>
-          </div>
-          <div className="hidden sm:flex items-center gap-3 shrink-0">
-            <a href="/#alur-projek" className="hover:text-white/80 transition-colors">Alur Projek</a>
-            <span className="text-white/40">•</span>
-            <a href="/#kontak" className="hover:text-white/80 transition-colors">Workshop Semarang</a>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. Header Utama */}
+      {/* Header Utama */}
       <div className="max-w-[1120px] mx-auto px-3 sm:px-4 py-2.5">
         <div className="flex items-center justify-between gap-2 sm:gap-4">
           {/* Logo Warunk Media */}

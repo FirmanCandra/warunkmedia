@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Search, MessageSquare, CheckCircle2, 
   Camera, Calendar, FileSpreadsheet, Shirt, Layers, 
-  Briefcase, HardHat, Package, ChevronRight, ChevronLeft, Clock, MapPin
+  Briefcase, HardHat, Package, ChevronRight, ChevronLeft, Clock
 } from 'lucide-react';
 import { PRODUCTS, WORKFLOW_STEPS, PRODUCTION_STAGES, PRODUCTION_GALLERY } from '../data/mockData';
 
@@ -68,17 +68,6 @@ export default function Home() {
 
   return (
     <div className="space-y-8 sm:space-y-12 pb-28 md:pb-16 overflow-x-hidden">
-      {/* Strip Lokasi Semarang Mobile (Wireframe Hal 10 & 12) */}
-      <div className="md:hidden bg-primary text-white text-xs px-4 py-2 flex items-center justify-between shadow-xs">
-        <div className="flex items-center gap-1.5 font-semibold">
-          <MapPin className="w-3.5 h-3.5 text-white/90" />
-          <span>Warunk Media — Semarang</span>
-        </div>
-        <a href="#kontak" className="text-[11px] text-white/90 hover:underline">
-          Info Workshop &gt;
-        </a>
-      </div>
-
       {/* 1. HERO SECTION (Layout Mengacu Referensi GajahPrint & Wireframe Hal 11) */}
       <section className="max-w-[1120px] mx-auto px-3 sm:px-4 pt-2 sm:pt-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-stretch">

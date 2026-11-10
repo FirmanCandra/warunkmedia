@@ -296,8 +296,14 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
 
       {/* Modal Form: Update Progres & Unggah Foto (Wireframe Hal 4) */}
       {selectedOrderForProgress && (
-        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-3 sm:p-4 backdrop-blur-xs overflow-y-auto">
-          <div className="relative w-full max-w-xl bg-surface rounded-card border border-line shadow-2xl p-6 sm:p-8 my-6">
+        <div
+          className="fixed inset-0 z-60 bg-black/75 overflow-y-auto backdrop-blur-xs flex justify-center p-0 sm:p-4"
+          onClick={() => setSelectedOrderForProgress(null)}
+        >
+          <div
+            className="relative w-full max-w-xl bg-surface sm:rounded-card border border-line shadow-2xl p-4 sm:p-8 my-0 sm:my-6 min-h-screen sm:min-h-0"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between pb-3 mb-4 border-b border-line">
               <div>
                 <h3 className="font-heading font-bold text-lg text-ink">
@@ -412,8 +418,14 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
 
       {/* Modal Form: + Pesanan Baru */}
       {showNewOrderModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-3 sm:p-4 backdrop-blur-xs overflow-y-auto">
-          <div className="relative w-full max-w-lg bg-surface rounded-card border border-line shadow-2xl p-6 sm:p-8 my-6">
+        <div
+          className="fixed inset-0 z-60 bg-black/75 overflow-y-auto backdrop-blur-xs flex justify-center p-0 sm:p-4"
+          onClick={() => setShowNewOrderModal(false)}
+        >
+          <div
+            className="relative w-full max-w-lg bg-surface sm:rounded-card border border-line shadow-2xl p-4 sm:p-8 my-0 sm:my-6 min-h-screen sm:min-h-0"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between pb-3 mb-4 border-b border-line">
               <h3 className="font-heading font-bold text-lg text-ink">
                 + Tambah Pesanan Konveksi Baru
