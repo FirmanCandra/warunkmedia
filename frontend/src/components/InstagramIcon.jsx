@@ -17,3 +17,4 @@ export default function InstagramIcon({ className = "w-4 h-4" }) {
     </svg>
   );
 }
+

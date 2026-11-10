@@ -59,7 +59,7 @@ export default function InvoiceModal({ order, onClose }) {
           {/* Header Kop */}
           <div className="flex items-start justify-between border-b-2 border-primary pb-4">
             <div>
-              <img src="/logo-warunkmedia.jpg" alt="Warunk Media" className="h-8 w-auto object-contain mb-1" />
+              <img src="/logo-warunkmedia.png" alt="Warunk Media" className="h-8 w-auto object-contain mb-1" />
               <p className="text-xs text-muted">PT Warunk Media Grup</p>
               <p className="text-xs text-muted">Jl. Griya Prasetya Selatan VI No.183, Semarang</p>
               <p className="text-xs text-muted">WhatsApp: 0812-3456-7890</p>

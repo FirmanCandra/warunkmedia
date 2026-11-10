@@ -9,9 +9,9 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-8 border-b border-white/10">
           {/* Kolom 1: Profil Usaha */}
           <div>
-            <div className="bg-white p-2.5 rounded-lg inline-block mb-4">
+            <div className="bg-white px-3 py-2 rounded-lg inline-block mb-4 shadow-xs">
               <img
-                src="/logo-warunkmedia.jpg"
+                src="/logo-warunkmedia.png"
                 alt="Warunk Media Logo"
                 className="h-8 w-auto object-contain"
               />

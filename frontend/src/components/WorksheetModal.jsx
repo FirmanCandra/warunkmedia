@@ -47,7 +47,7 @@ export default function WorksheetModal({ order, onClose }) {
           <div className="flex items-start justify-between border-b-2 border-primary pb-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <img src="/logo-warunkmedia.jpg" alt="Warunk Media" className="h-8 w-auto object-contain" />
+                <img src="/logo-warunkmedia.png" alt="Warunk Media" className="h-8 w-auto object-contain" />
               </div>
               <p className="text-xs text-muted">PT Warunk Media Grup — Konveksi & Percetakan Semarang</p>
               <p className="text-xs text-muted">Jl. Griya Prasetya Selatan VI No.183 · WA: 0812-3456-7890</p>
@@ -162,3 +162,4 @@ export default function WorksheetModal({ order, onClose }) {
     </div>
   );
 }
+

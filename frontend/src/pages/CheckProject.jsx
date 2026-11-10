@@ -150,7 +150,7 @@ export default function CheckProject({ orders = INITIAL_ORDERS }) {
 
             <div className="aspect-video w-full rounded-xl overflow-hidden bg-canvas border border-line">
               <img
-                src={activeOrder.thumbnail || '/logo-warunkmedia.jpg'}
+                src={activeOrder.thumbnail || '/logo-warunkmedia.png'}
                 alt={activeOrder.productName}
                 className="w-full h-full object-cover"
               />

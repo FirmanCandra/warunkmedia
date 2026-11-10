@@ -55,9 +55,9 @@ export default function Navbar({ currentUser, onLogout }) {
         {/* Logo saja sesuai aturan design.md section 2 */}
         <Link to="/" className="flex-shrink-0 flex items-center" aria-label="Beranda Warunk Media">
           <img
-            src="/logo-warunkmedia.jpg"
+            src="/logo-warunkmedia.png"
             alt="Warunk Media"
-            className="h-9 sm:h-10 w-auto object-contain"
+            className="h-8 sm:h-9 md:h-10 w-auto object-contain transition-transform hover:scale-102"
           />
         </Link>
 

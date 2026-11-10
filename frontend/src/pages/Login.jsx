@@ -54,9 +54,9 @@ export default function Login({ onLogin }) {
       <div className="bg-surface rounded-card border border-line p-6 sm:p-8 shadow-xs space-y-6">
         <div className="text-center space-y-2">
           <img
-            src="/logo-warunkmedia.jpg"
+            src="/logo-warunkmedia.png"
             alt="Warunk Media"
-            className="h-10 mx-auto object-contain"
+            className="h-9 mx-auto object-contain"
           />
           <h1 className="font-heading font-extrabold text-2xl text-ink">
             Masuk ke Akun
@@ -160,3 +160,4 @@ export default function Login({ onLogin }) {
     </div>
   );
 }
+

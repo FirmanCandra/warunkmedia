@@ -1,15 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Search, MessageSquare, ArrowRight, CheckCircle2, 
+  Search, MessageSquare, CheckCircle2, 
   Camera, Calendar, FileSpreadsheet, Shirt, Layers, 
-  Briefcase, HardHat, Package, ChevronRight, Clock
+  Briefcase, HardHat, Package, ChevronRight, ChevronLeft, Clock
 } from 'lucide-react';
 import { PRODUCTS, WORKFLOW_STEPS, PRODUCTION_STAGES, PRODUCTION_GALLERY } from '../data/mockData';
 
+const BANNER_SLIDES = [
+  {
+    id: 1,
+    image: '/banner-1.png',
+    alt: 'Produksi Kaos Sablon Warunk Media Semarang',
+    code: 'WM-0012'
+  },
+  {
+    id: 2,
+    image: '/banner-2.png',
+    alt: 'Produksi Jaket & Hoodie Komunitas Warunk Media',
+    code: 'WM-0009'
+  },
+  {
+    id: 3,
+    image: '/banner-3.png',
+    alt: 'Produksi Kemeja PDH & Korsa Warunk Media',
+    code: 'WM-0015'
+  }
+];
+
 export default function Home() {
   const [quickCode, setQuickCode] = useState('');
+  const [currentSlide, setCurrentSlide] = useState(0);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % BANNER_SLIDES.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % BANNER_SLIDES.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + BANNER_SLIDES.length) % BANNER_SLIDES.length);
+  };
 
   const handleQuickCheck = (e) => {
     e.preventDefault();
@@ -39,66 +76,108 @@ export default function Home() {
 
       {/* 1. HERO SECTION (Layout Mengacu Referensi GajahPrint & Wireframe Hal 11) */}
       <section className="max-w-[1120px] mx-auto px-4 pt-4 sm:pt-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
           {/* Kiri: Daftar Kategori Produk (Hidden di HP sangat kecil, terlihat di tablet/desktop) */}
-          <div className="hidden lg:block lg:col-span-3 bg-surface rounded-card border border-line p-4 shadow-xs">
-            <h3 className="font-heading font-bold text-sm text-ink mb-3 pb-2 border-b border-line flex items-center justify-between">
-              <span>Produk Kami</span>
-              <span className="text-xs text-primary font-normal">Pilihan Bahan</span>
-            </h3>
-            <ul className="space-y-1.5">
-              {PRODUCTS.map((prod) => (
-                <li key={prod.id}>
-                  <a
-                    href="#produk-kami"
-                    className="flex items-center justify-between p-2 rounded-lg hover:bg-canvas text-xs font-semibold text-ink group transition-colors"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="p-1.5 rounded-md bg-canvas group-hover:bg-primary/10 transition-colors">
-                        {getProductIcon(prod.icon)}
+          <div className="hidden lg:flex lg:col-span-3 bg-surface rounded-card border border-line p-4 shadow-xs flex-col justify-between">
+            <div>
+              <h3 className="font-heading font-bold text-sm text-ink mb-3 pb-2 border-b border-line flex items-center justify-between">
+                <span>Produk Kami</span>
+                <span className="text-xs text-primary font-normal">Pilihan Bahan</span>
+              </h3>
+              <ul className="space-y-1.5">
+                {PRODUCTS.map((prod) => (
+                  <li key={prod.id}>
+                    <a
+                      href="#produk-kami"
+                      className="flex items-center justify-between p-2 rounded-lg hover:bg-canvas text-xs font-semibold text-ink group transition-colors"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="p-1.5 rounded-md bg-canvas group-hover:bg-primary/10 transition-colors">
+                          {getProductIcon(prod.icon)}
+                        </div>
+                        <span>{prod.name}</span>
                       </div>
-                      <span>{prod.name}</span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-muted group-hover:text-primary transition-colors" />
-                  </a>
-                </li>
-              ))}
-            </ul>
+                      <ChevronRight className="w-4 h-4 text-muted group-hover:text-primary transition-colors" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="pt-3 border-t border-line text-[11px] text-muted flex items-center justify-between">
+              <span>Minimal order 24 pcs</span>
+              <span className="font-semibold text-brand-green">Free Desain</span>
+            </div>
           </div>
 
-          {/* Tengah: Banner Merah Hero dengan Headline Jujur & Foto */}
-          <div className="lg:col-span-6 bg-gradient-to-br from-primary via-primary to-brand-red-dark text-white rounded-card p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden shadow-sm min-h-[320px]">
-            {/* Dekorasi halus tanpa AI slop */}
-            <div className="absolute -right-12 -bottom-12 w-64 h-64 bg-white/5 rounded-full pointer-events-none" />
-
-            <div className="relative z-10 space-y-3">
-              <span className="inline-block px-3 py-1 bg-white/20 text-white rounded-full text-xs font-semibold backdrop-blur-xs">
-                Sistem Tracking Produksi Konveksi
-              </span>
-              <h1 className="font-heading font-extrabold text-2xl sm:text-3xl lg:text-4xl leading-tight">
-                Pantau pesanan konveksimu, tahap demi tahap.
-              </h1>
-              <p className="text-sm sm:text-base text-white/90 max-w-md leading-relaxed">
-                Lihat langsung progres produksi dan bukti foto dari workshop Warunk Media Semarang langsung dari HP Anda.
-              </p>
+          {/* Tengah: Banner Carousel Grafis (Revisi Garis Biru Sesuai Referensi Gambar 2) */}
+          <div className="lg:col-span-6 relative rounded-card overflow-hidden border border-line shadow-sm group bg-black/5 flex flex-col justify-center">
+            {/* Slide Gambar Banner */}
+            <div 
+              className="relative w-full aspect-[2/1] cursor-pointer overflow-hidden"
+              onClick={() => navigate(`/cek-projek?code=${BANNER_SLIDES[currentSlide].code}`)}
+              title="Klik untuk cek demo projek"
+            >
+              {BANNER_SLIDES.map((slide, idx) => (
+                <div
+                  key={slide.id}
+                  className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                    idx === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+                  }`}
+                >
+                  <img
+                    src={slide.image}
+                    alt={slide.alt}
+                    className="w-full h-full object-cover"
+                    loading={idx === 0 ? 'eager' : 'lazy'}
+                  />
+                </div>
+              ))}
             </div>
 
-            <div className="relative z-10 pt-6 flex flex-wrap items-center gap-3">
+            {/* Kontrol Carousel di Bagian Bawah Kanan (GajahPrint Style) */}
+            <div className="absolute bottom-3 right-3 z-20 flex items-center gap-1.5">
               <button
-                onClick={() => navigate('/cek-projek?code=WM-0012')}
-                className="px-6 py-2.5 bg-white text-primary hover:bg-white/90 text-sm font-bold rounded-control flex items-center gap-2 shadow-xs transition-all active:scale-95"
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  prevSlide();
+                }}
+                aria-label="Slide sebelumnya"
+                className="w-7 h-7 rounded-full bg-black/50 hover:bg-black/80 text-white flex items-center justify-center transition-all backdrop-blur-xs active:scale-95 shadow-sm"
               >
-                <span>Coba Demo Cek Projek</span>
-                <ArrowRight className="w-4 h-4" />
+                <ChevronLeft className="w-4 h-4" />
               </button>
-              <a
-                href="https://wa.me/6281234567890?text=Halo%20Warunk%20Media,%20saya%20mau%20konsultasi%20pesanan"
-                target="_blank"
-                rel="noreferrer"
-                className="px-4 py-2.5 bg-black/20 hover:bg-black/30 text-white text-sm font-semibold rounded-control transition-colors"
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  nextSlide();
+                }}
+                aria-label="Slide berikutnya"
+                className="w-7 h-7 rounded-full bg-black/50 hover:bg-black/80 text-white flex items-center justify-center transition-all backdrop-blur-xs active:scale-95 shadow-sm"
               >
-                Tanya WhatsApp
-              </a>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Indikator Titik Carousel di Tengah Bawah */}
+            <div className="absolute bottom-3.5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5">
+              {BANNER_SLIDES.map((slide, idx) => (
+                <button
+                  key={slide.id}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentSlide(idx);
+                  }}
+                  aria-label={`Ke slide ${idx + 1}`}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    idx === currentSlide 
+                      ? 'w-6 bg-primary' 
+                      : 'w-2 bg-white/70 hover:bg-white'
+                  }`}
+                />
+              ))}
             </div>
           </div>
 

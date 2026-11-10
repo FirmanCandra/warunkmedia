@@ -36,7 +36,7 @@ export default function OrderCard({
         {/* Foto Thumbnail */}
         <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden bg-canvas border border-line flex-shrink-0">
           <img
-            src={order.thumbnail || '/logo-warunkmedia.jpg'}
+            src={order.thumbnail || '/logo-warunkmedia.png'}
             alt={order.productName}
             className="w-full h-full object-cover"
             loading="lazy"
@@ -135,3 +135,4 @@ export default function OrderCard({
     </div>
   );
 }
+
