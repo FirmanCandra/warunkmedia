@@ -222,6 +222,28 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
     setNotes('');
   };
 
+  // ── Simpan Worksheet yang Diedit ─────────────────────────────────────────────
+  const handleSaveWorksheet = (updatedWorksheet) => {
+    if (!selectedWorksheet) return;
+    const nextList = orderList.map((ord) =>
+      ord.id === selectedWorksheet.id ? { ...ord, worksheet: updatedWorksheet } : ord
+    );
+    setOrderList(nextList);
+    if (onUpdateOrders) onUpdateOrders(nextList);
+    setSelectedWorksheet(null);
+  };
+
+  // ── Simpan Invoice yang Diedit ───────────────────────────────────────────────
+  const handleSaveInvoice = (updatedInvoice) => {
+    if (!selectedInvoice) return;
+    const nextList = orderList.map((ord) =>
+      ord.id === selectedInvoice.id ? { ...ord, invoice: updatedInvoice } : ord
+    );
+    setOrderList(nextList);
+    if (onUpdateOrders) onUpdateOrders(nextList);
+    setSelectedInvoice(null);
+  };
+
   // Simpan Pesanan Baru
   const handleCreateOrder = (e) => {
     e.preventDefault();
@@ -1345,14 +1367,24 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
         </div>
       )}
 
-      {/* ── Modal Worksheet ── */}
+      {/* ── Modal Worksheet (editable for admin) ── */}
       {selectedWorksheet && (
-        <WorksheetModal order={selectedWorksheet} onClose={() => setSelectedWorksheet(null)} />
+        <WorksheetModal
+          order={selectedWorksheet}
+          onClose={() => setSelectedWorksheet(null)}
+          isAdmin
+          onSave={handleSaveWorksheet}
+        />
       )}
 
-      {/* ── Modal Invoice ── */}
+      {/* ── Modal Invoice (editable for admin) ── */}
       {selectedInvoice && (
-        <InvoiceModal order={selectedInvoice} onClose={() => setSelectedInvoice(null)} />
+        <InvoiceModal
+          order={selectedInvoice}
+          onClose={() => setSelectedInvoice(null)}
+          isAdmin
+          onSave={handleSaveInvoice}
+        />
       )}
     </div>
   );
