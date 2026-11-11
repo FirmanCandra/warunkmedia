@@ -192,3 +192,4 @@ export default function ProductIcon({ productId, className = "w-12 h-12", ...pro
       );
   }
 }
+

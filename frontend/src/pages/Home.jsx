@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   CheckCircle2, Camera, Calendar, FileSpreadsheet, 
-  ChevronRight, ChevronLeft, Clock, MessageSquare, 
-  ArrowUpRight
+  ChevronRight, ChevronLeft, Clock
 } from 'lucide-react';
 import { PRODUCTS, WORKFLOW_STEPS, PRODUCTION_STAGES, PRODUCTION_GALLERY } from '../data/mockData';
 import ProductIcon from '../components/ProductIcons';
@@ -37,8 +36,6 @@ const BANNER_SLIDES = [
 
 export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
-
-  const [activeProductId, setActiveProductId] = useState('kaos');
   const navigate = useNavigate();
 
   // Auto-rotate Hero Banner
@@ -58,9 +55,7 @@ export default function Home() {
   };
 
   // Active spotlight product for detailed preview
-  const activeProduct = useMemo(() => {
-    return PRODUCTS.find((p) => p.id === activeProductId) || PRODUCTS[0];
-  }, [activeProductId]);
+  
 
 
   return (
@@ -158,112 +153,49 @@ export default function Home() {
       </section>
 
       {/* =========================================================================
-          2. KATEGORI PRODUK (LAYOUT 5x2 GRID DENGAN DOTTED LINE SESUAI REFERENSI)
+          2. KATEGORI PRODUK (GRID 5x2 RAPI & COMPACT DI MOBILE & DESKTOP)
+          (Display detail barang ditiadakan, mobile tetap 2 baris rapi tidak memanjang)
           ========================================================================= */}
       <section id="kategori-produk" className="max-w-[1120px] mx-auto px-3 sm:px-4">
-        <div className="bg-surface rounded-card border border-line p-4 sm:p-6 md:p-8 shadow-xs">
+        <div className="bg-surface rounded-card border border-line p-3 sm:p-5 md:p-6 shadow-xs">
           
-          {/* Header: Title + Dotted Line (Exact match to reference media_1794383202396_f358866a.png) */}
-          <div className="flex items-center gap-3 sm:gap-4 mb-5 sm:mb-6">
-            <h2 className="font-heading font-extrabold text-lg sm:text-2xl text-ink shrink-0 tracking-tight">
+          {/* Header: Title + Dotted Line */}
+          <div className="flex items-center gap-2.5 sm:gap-4 mb-3 sm:mb-5">
+            <h2 className="font-heading font-extrabold text-sm sm:text-xl md:text-2xl text-ink shrink-0 tracking-tight">
               Kategori Produk
             </h2>
             <div className="flex-1 border-b-2 border-dotted border-gray-300" />
-            <span className="text-[11px] text-muted hidden sm:inline font-medium">
-              10 Pilihan Layanan
+            <span className="text-[10px] sm:text-xs text-muted font-medium shrink-0">
+              Pilihan Konveksi & Merchandise
             </span>
           </div>
 
-          {/* 5x2 Grid of Product Cards with Animated Custom Bespoke Icons */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
-            {PRODUCTS.map((prod, idx) => {
-              const isActive = prod.id === activeProductId;
-              return (
-                <button
-                  key={prod.id}
-                  type="button"
-                  onClick={() => setActiveProductId(prod.id)}
-                  className={`bg-white rounded-2xl border transition-all duration-300 flex flex-col items-center justify-center p-3.5 sm:p-5 text-center group cursor-pointer aspect-square sm:aspect-[1/1.08] relative shadow-xs hover:shadow-md ${
-                    isActive
-                      ? 'border-primary ring-2 ring-primary/20 shadow-sm bg-red-50/30'
-                      : 'border-line hover:border-primary/50 hover:bg-canvas/50'
-                  }`}
-                  title={`Klik untuk detail ${prod.name}`}
+          {/* 5 Kolom x 2 Baris: Rapi, Ringkas, Tidak Memanjang ke Bawah di HP */}
+          <div className="grid grid-cols-5 gap-1.5 xs:gap-2 sm:gap-3 md:gap-4">
+            {PRODUCTS.map((prod, idx) => (
+              <a
+                key={prod.id}
+                href={`https://wa.me/6281234567890?text=Halo%20Warunk%20Media,%20saya%20tertarik%20pemesanan%20${encodeURIComponent(prod.name)}`}
+                target="_blank"
+                rel="noreferrer"
+                className="bg-white rounded-xl sm:rounded-2xl border border-line hover:border-primary/60 hover:bg-red-50/20 active:scale-95 transition-all duration-300 flex flex-col items-center justify-center p-1.5 xs:p-2 sm:p-3 md:p-4 text-center group cursor-pointer aspect-square sm:aspect-[1/1.05] relative shadow-2xs hover:shadow-sm"
+                title={`Konsultasi ${prod.name} via WhatsApp`}
+              >
+                {/* Bespoke Animated Product Icon in Brand Red */}
+                <div
+                  className="w-7 h-7 xs:w-8 xs:h-8 sm:w-11 sm:h-11 md:w-12 md:h-12 flex items-center justify-center text-primary group-hover:text-primary-dark transition-all duration-300 animate-icon-bounce-gentle group-hover:scale-115 group-hover:-translate-y-0.5 shrink-0"
+                  style={{ animationDelay: `${idx * 0.18}s` }}
                 >
-                  {/* Bespoke Animated Product Icon in Brand Red */}
-                  <div
-                    className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center text-primary group-hover:text-primary-dark transition-all duration-300 animate-icon-bounce-gentle group-hover:scale-115 group-hover:-translate-y-1"
-                    style={{ animationDelay: `${idx * 0.18}s` }}
-                  >
-                    <ProductIcon productId={prod.id} className="w-10 h-10 sm:w-12 sm:h-12 drop-shadow-xs" />
-                  </div>
+                  <ProductIcon productId={prod.id} className="w-6 h-6 xs:w-7 xs:h-7 sm:w-9 sm:h-9 md:w-10 md:h-10 drop-shadow-xs" />
+                </div>
 
-                  {/* Centered Label */}
-                  <span className={`mt-2.5 sm:mt-3 font-heading font-bold text-xs sm:text-sm transition-colors text-center leading-snug line-clamp-2 ${
-                    isActive ? 'text-primary' : 'text-ink group-hover:text-primary'
-                  }`}>
-                    {prod.shortName || prod.name}
-                  </span>
-                </button>
-              );
-            })}
+                {/* Centered Label */}
+                <span className="mt-1 sm:mt-2 font-heading font-bold text-[9px] xs:text-[10px] sm:text-xs md:text-sm text-ink group-hover:text-primary transition-colors text-center leading-tight line-clamp-2">
+                  {prod.shortName || prod.name}
+                </span>
+              </a>
+            ))}
           </div>
-
-          {/* Active Product Spotlight & Fast WA Consultation Drawer */}
-          {activeProduct && (
-            <div className="mt-6 pt-6 border-t border-line">
-              <div className="bg-canvas rounded-2xl border border-line p-4 sm:p-5 flex flex-col md:flex-row gap-4 sm:gap-6 items-center">
-                <div className="w-full md:w-56 h-40 sm:h-44 rounded-xl overflow-hidden relative shrink-0 bg-white border border-line shadow-xs">
-                  <img
-                    src={activeProduct.image}
-                    alt={activeProduct.name}
-                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                    loading="lazy"
-                  />
-                  <span className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-primary text-white shadow-xs">
-                    {activeProduct.badge}
-                  </span>
-                </div>
-
-                <div className="flex-1 w-full space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-semibold text-primary uppercase tracking-wider">
-                      ✦ {activeProduct.highlight}
-                    </span>
-                  </div>
-                  <h3 className="font-heading font-bold text-base sm:text-xl text-ink">
-                    {activeProduct.name}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-muted leading-relaxed">
-                    {activeProduct.desc}
-                  </p>
-                  <p className="text-xs text-muted">
-                    <strong className="text-ink">Pilihan Bahan:</strong> {activeProduct.material}
-                  </p>
-
-                  <div className="pt-2 flex flex-wrap items-center gap-2.5">
-                    <a
-                      href={`https://wa.me/6281234567890?text=Halo%20Warunk%20Media,%20saya%20mau%20konsultasi%20pemesanan%20${encodeURIComponent(activeProduct.name)}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control text-xs font-semibold inline-flex items-center gap-1.5 transition-colors shadow-xs active:scale-95"
-                    >
-                      <MessageSquare className="w-4 h-4" />
-                      <span>Konsultasi {activeProduct.shortName} via WhatsApp</span>
-                      <ArrowUpRight className="w-3.5 h-3.5" />
-                    </a>
-                    <button
-                      type="button"
-                      onClick={() => navigate('/cek-projek?code=WM-0012')}
-                      className="px-3.5 py-2 bg-surface hover:bg-line/50 text-ink rounded-control text-xs font-semibold border border-line transition-colors cursor-pointer"
-                    >
-                      Cek Demo Tracking &rarr;
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
 
         </div>
       </section>
