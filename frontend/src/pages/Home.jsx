@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  CheckCircle2, Camera, Calendar, FileSpreadsheet, 
   ChevronRight, ChevronLeft, Clock
 } from 'lucide-react';
 import { PRODUCTS, WORKFLOW_STEPS, PRODUCTION_STAGES, PRODUCTION_GALLERY } from '../data/mockData';
@@ -31,6 +30,67 @@ const BANNER_SLIDES = [
     code: 'WM-0015',
     tag: 'PDH & Korsa',
     headline: 'Nagata Drill Original untuk Organisasi & Kampus'
+  }
+];
+
+
+const ADVANTAGES = [
+  {
+    id: 'pantau-progres',
+    title: 'Pantau Progres',
+    desc: 'Lihat status pengerjaan pesanan kapan saja secara real-time tanpa perlu chat admin berulang kali.',
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80',
+    icon: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="9" strokeOpacity="0.35" strokeDasharray="2 2" />
+        <path d="M12 3a9 9 0 0 1 9 9" strokeWidth="2.2" />
+        <circle cx="12" cy="12" r="4.5" fill="white" fillOpacity="0.2" />
+        <path d="m9.5 12 1.8 1.8 3.5-3.5" stroke="white" strokeWidth="2.5" />
+      </svg>
+    )
+  },
+  {
+    id: 'foto-bukti',
+    title: 'Foto Bukti Real',
+    desc: 'Setiap tahap produksi (potong kain, sablon, bordir, jahit) disertai dokumentasi foto asli langsung dari workshop.',
+    image: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800&auto=format&fit=crop&q=80',
+    icon: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" fill="white" fillOpacity="0.2" />
+        <circle cx="12" cy="14" r="4.5" strokeWidth="2" />
+        <circle cx="12" cy="14" r="2" fill="white" />
+        <path d="M18.5 10h.01" strokeWidth="3" strokeLinecap="round" />
+      </svg>
+    )
+  },
+  {
+    id: 'deadline-jelas',
+    title: 'Deadline Jelas',
+    desc: 'Estimasi tanggal selesai terdata transparan sejak awal pemesanan agar jadwal event Anda tepat waktu.',
+    image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&auto=format&fit=crop&q=80',
+    icon: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M10 2h4M12 14V9" strokeWidth="2.2" />
+        <circle cx="12" cy="14" r="8" fill="white" fillOpacity="0.2" />
+        <path d="m12 14 3.5-3.5" stroke="white" strokeWidth="2.5" />
+        <circle cx="12" cy="14" r="1.5" fill="white" />
+      </svg>
+    )
+  },
+  {
+    id: 'worksheet-invoice',
+    title: 'Worksheet & Invoice',
+    desc: 'Dokumen rincian ukuran, spesifikasi bahan, dan faktur resmi workshop yang dapat dicetak atau diunduh kapan saja.',
+    image: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?w=800&auto=format&fit=crop&q=80',
+    icon: (
+      <svg viewBox="0 0 24 24" className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="white" fillOpacity="0.2" />
+        <path d="M14 2v6h6" strokeWidth="1.8" />
+        <path d="M8 12h4M8 16h8" strokeWidth="2" strokeLinecap="round" />
+        <circle cx="16" cy="16" r="3.5" fill="#7F1D1D" stroke="white" strokeWidth="1.5" />
+        <path d="m14.8 16 1 1 1.8-1.8" stroke="white" strokeWidth="1.6" />
+      </svg>
+    )
   }
 ];
 
@@ -201,57 +261,68 @@ export default function Home() {
       </section>
 
       {/* =========================================================================
-          3. EMPAT KARTU KEUNGGULAN (Wireframe Hal 11 & design.md Section 12)
+          3. KEUNGGULAN WORKSHOP (CIRCULAR SHOWCASE TIMELINE SESUAI REFERENSI)
           ========================================================================= */}
       <section className="max-w-[1120px] mx-auto px-3 sm:px-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
-          <div className="bg-surface rounded-card border border-line p-3.5 sm:p-5 shadow-xs flex flex-col gap-2">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-primary text-white flex items-center justify-center shrink-0">
-              <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
-            </div>
-            <div>
-              <h4 className="font-heading font-bold text-xs sm:text-sm text-ink">Pantau Progres</h4>
-              <p className="text-[11px] sm:text-xs text-muted mt-0.5 leading-relaxed">
-                Lihat tahap pengerjaan pesanan kapan saja tanpa perlu chat manual.
-              </p>
+        <div className="bg-surface rounded-3xl border border-line p-5 sm:p-8 md:p-12 shadow-xs relative overflow-hidden">
+          
+          {/* Header Section (Matching Reference Style: Big Bold Heading with Colored Emphasized Underline) */}
+          <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12 md:mb-14">
+            <h2 className="font-heading font-extrabold text-xl sm:text-3xl md:text-4xl text-ink tracking-tight leading-tight">
+              Pantau Pesanan Konveksi,{' '}
+              <span className="text-primary underline decoration-primary/40 underline-offset-8">
+                Lebih Tenang!
+              </span>
+            </h2>
+            <p className="text-xs sm:text-sm text-muted mt-2.5 sm:mt-3 leading-relaxed">
+              Standar transparansi pengerjaan workshop Warunk Media Semarang: live tracking tahapan, dokumentasi foto bukti pengerjaan real-time, dan jaminan estimasi waktu yang transparan.
+            </p>
+          </div>
+
+          {/* 4 Circular Showcase Nodes Connected by Horizontal Guide Line (Matching Reference Image) */}
+          <div className="relative">
+            {/* Horizontal Connecting Guide Line (Desktop Only) */}
+            <div className="absolute top-[32%] sm:top-[35%] md:top-[38%] left-[8%] right-[8%] h-0.5 bg-gradient-to-r from-line via-primary/35 to-line -translate-y-1/2 z-0 hidden md:block pointer-events-none" />
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-8 sm:gap-x-6 sm:gap-y-10 md:gap-6 relative z-10">
+              {ADVANTAGES.map((item) => (
+                <div key={item.id} className="flex flex-col items-center group">
+                  
+                  {/* Large Circular Photo Frame with Floating Badge */}
+                  <div className="relative">
+                    {/* The Circular Showcase Orb */}
+                    <div className="w-28 h-28 xs:w-32 xs:h-32 sm:w-40 sm:h-40 md:w-44 md:h-44 lg:w-48 lg:h-48 rounded-full overflow-hidden border-4 border-white shadow-lg group-hover:shadow-2xl transition-all duration-500 bg-canvas relative group-hover:scale-105">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 select-none"
+                        loading="lazy"
+                      />
+                      {/* Subtle Vignette Overlay for Depth */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60 group-hover:opacity-30 transition-opacity pointer-events-none" />
+                    </div>
+
+                    {/* Floating Overlapping Badge at Bottom Center (Matching Image 1) */}
+                    <div className="absolute -bottom-3 sm:-bottom-4 left-1/2 -translate-x-1/2 w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-gradient-to-tr from-primary to-[#DC2626] text-white flex items-center justify-center ring-4 ring-white shadow-md group-hover:shadow-lg transition-transform duration-300 group-hover:scale-115 group-hover:rotate-6 z-20">
+                      {item.icon}
+                    </div>
+                  </div>
+
+                  {/* Text Details Below Circle */}
+                  <div className="mt-5 sm:mt-7 text-center">
+                    <h3 className="font-heading font-extrabold text-xs xs:text-sm sm:text-base text-ink group-hover:text-primary transition-colors leading-snug">
+                      {item.title}
+                    </h3>
+                    <p className="text-[10px] xs:text-[11px] sm:text-xs text-muted mt-1 leading-relaxed max-w-[200px] mx-auto line-clamp-3">
+                      {item.desc}
+                    </p>
+                  </div>
+
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="bg-surface rounded-card border border-line p-3.5 sm:p-5 shadow-xs flex flex-col gap-2">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-primary text-white flex items-center justify-center shrink-0">
-              <Camera className="w-4 h-4 sm:w-5 sm:h-5" />
-            </div>
-            <div>
-              <h4 className="font-heading font-bold text-xs sm:text-sm text-ink">Foto Bukti</h4>
-              <p className="text-[11px] sm:text-xs text-muted mt-0.5 leading-relaxed">
-                Setiap tahap produksi (sablon, potong, jahit) disertai foto bukti real.
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-surface rounded-card border border-line p-3.5 sm:p-5 shadow-xs flex flex-col gap-2">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-primary text-white flex items-center justify-center shrink-0">
-              <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
-            </div>
-            <div>
-              <h4 className="font-heading font-bold text-xs sm:text-sm text-ink">Deadline Jelas</h4>
-              <p className="text-[11px] sm:text-xs text-muted mt-0.5 leading-relaxed">
-                Estimasi tanggal selesai terdata transparan sejak awal pemesanan.
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-surface rounded-card border border-line p-3.5 sm:p-5 shadow-xs flex flex-col gap-2">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-primary text-white flex items-center justify-center shrink-0">
-              <FileSpreadsheet className="w-4 h-4 sm:w-5 sm:h-5" />
-            </div>
-            <div>
-              <h4 className="font-heading font-bold text-xs sm:text-sm text-ink">Worksheet & Invoice</h4>
-              <p className="text-[11px] sm:text-xs text-muted mt-0.5 leading-relaxed">
-                Dokumen rincian ukuran, spesifikasi bahan, dan invoice resmi siap cetak.
-              </p>
-            </div>
-          </div>
         </div>
       </section>
 
