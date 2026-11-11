@@ -2,10 +2,11 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   CheckCircle2, Camera, Calendar, FileSpreadsheet, 
-  ChevronRight, ChevronLeft, Clock, Sparkles, MessageSquare, 
+  ChevronRight, ChevronLeft, Clock, MessageSquare, 
   ArrowUpRight
 } from 'lucide-react';
 import { PRODUCTS, WORKFLOW_STEPS, PRODUCTION_STAGES, PRODUCTION_GALLERY } from '../data/mockData';
+import ProductIcon from '../components/ProductIcons';
 
 const BANNER_SLIDES = [
   {
@@ -36,7 +37,7 @@ const BANNER_SLIDES = [
 
 export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState('all'); // 'all' | 'konveksi' | 'merchandise' | 'percetakan'
+
   const [activeProductId, setActiveProductId] = useState('kaos');
   const navigate = useNavigate();
 
@@ -61,11 +62,6 @@ export default function Home() {
     return PRODUCTS.find((p) => p.id === activeProductId) || PRODUCTS[0];
   }, [activeProductId]);
 
-  // Filtered products for the catalog showcase
-  const filteredProducts = useMemo(() => {
-    if (selectedCategory === 'all') return PRODUCTS;
-    return PRODUCTS.filter((p) => p.division === selectedCategory);
-  }, [selectedCategory]);
 
   return (
     <div className="space-y-10 sm:space-y-14 pb-28 md:pb-16 overflow-x-hidden">
@@ -162,268 +158,113 @@ export default function Home() {
       </section>
 
       {/* =========================================================================
-          2. PRODUK KAMI: LUXURY KINETIC MOVING IMAGE ICONS ("ICON BERGERAK BERBENTUK GAMBAR")
-          (Revisi: Tanpa kotak polos, icon berbentuk foto produk yang bergerak/float ritmis, hapus min order 24 pcs)
+          2. KATEGORI PRODUK (LAYOUT 5x2 GRID DENGAN DOTTED LINE SESUAI REFERENSI)
           ========================================================================= */}
-      <section id="produk-kami" className="max-w-[1120px] mx-auto px-3 sm:px-4">
-        <div className="relative rounded-3xl bg-gradient-to-b from-[#181818] via-[#141414] to-[#0D0D0D] text-white p-5 sm:p-8 md:p-10 border border-white/10 shadow-2xl overflow-hidden">
+      <section id="kategori-produk" className="max-w-[1120px] mx-auto px-3 sm:px-4">
+        <div className="bg-surface rounded-card border border-line p-4 sm:p-6 md:p-8 shadow-xs">
           
-          {/* Ambient Lighting Orbs for High-End Depth */}
-          <div className="absolute -top-24 -left-24 w-72 h-72 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-24 -right-24 w-72 h-72 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
-
-          {/* Section Header */}
-          <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-white/10">
-            <div className="space-y-1.5">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/15 text-[10px] sm:text-xs font-bold text-amber-300 tracking-wider uppercase">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                <span>Katalog Pilihan Workshop Semarang</span>
-              </div>
-              <h2 className="font-heading font-extrabold text-xl sm:text-3xl text-white tracking-tight">
-                PRODUK KAMI
-              </h2>
-              <p className="text-xs sm:text-sm text-gray-300 max-w-xl leading-relaxed">
-                Sentuh atau klik icon produk untuk melihat spesifikasi bahan, hasil cetak bordir/sablon, dan konsultasi cepat via WhatsApp.
-              </p>
-            </div>
-
-            {/* Quick Contact Action */}
-            <a
-              href="https://wa.me/6281234567890?text=Halo%20Warunk%20Media,%20saya%20mau%20konsultasi%20pemesanan%20produk%20workshop"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary hover:bg-primary-dark text-white text-xs font-bold transition-all shadow-md active:scale-95 shrink-0 self-start md:self-auto cursor-pointer"
-            >
-              <MessageSquare className="w-4 h-4 text-brand-green" />
-              <span>Konsultasi WA Workshop</span>
-            </a>
+          {/* Header: Title + Dotted Line (Exact match to reference media_1794383202396_f358866a.png) */}
+          <div className="flex items-center gap-3 sm:gap-4 mb-5 sm:mb-6">
+            <h2 className="font-heading font-extrabold text-lg sm:text-2xl text-ink shrink-0 tracking-tight">
+              Kategori Produk
+            </h2>
+            <div className="flex-1 border-b-2 border-dotted border-gray-300" />
+            <span className="text-[11px] text-muted hidden sm:inline font-medium">
+              10 Pilihan Layanan
+            </span>
           </div>
 
-          {/* ── PART A: 9 KINETIC FLOATING IMAGE ICONS (ICON YANG BERGERAK-GERAK) ── */}
-          <div className="relative z-10 pt-8 pb-4">
-            <div className="grid grid-cols-5 md:grid-cols-9 gap-2 xs:gap-3 sm:gap-4 md:gap-3 lg:gap-4">
-              {PRODUCTS.map((prod, idx) => {
-                const isActive = prod.id === activeProductId;
-                return (
-                  <button
-                    key={prod.id}
-                    type="button"
-                    onClick={() => setActiveProductId(prod.id)}
-                    className={`group flex flex-col items-center text-center p-1 sm:p-2 rounded-2xl transition-all duration-300 focus:outline-none cursor-pointer ${
-                      isActive ? 'bg-white/10 ring-1 ring-primary/60 scale-105' : 'hover:bg-white/5'
-                    }`}
-                    title={`Lihat detail ${prod.name}`}
+          {/* 5x2 Grid of Product Cards with Animated Custom Bespoke Icons */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
+            {PRODUCTS.map((prod, idx) => {
+              const isActive = prod.id === activeProductId;
+              return (
+                <button
+                  key={prod.id}
+                  type="button"
+                  onClick={() => setActiveProductId(prod.id)}
+                  className={`bg-white rounded-2xl border transition-all duration-300 flex flex-col items-center justify-center p-3.5 sm:p-5 text-center group cursor-pointer aspect-square sm:aspect-[1/1.08] relative shadow-xs hover:shadow-md ${
+                    isActive
+                      ? 'border-primary ring-2 ring-primary/20 shadow-sm bg-red-50/30'
+                      : 'border-line hover:border-primary/50 hover:bg-canvas/50'
+                  }`}
+                  title={`Klik untuk detail ${prod.name}`}
+                >
+                  {/* Bespoke Animated Product Icon in Brand Red */}
+                  <div
+                    className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center text-primary group-hover:text-primary-dark transition-all duration-300 animate-icon-bounce-gentle group-hover:scale-115 group-hover:-translate-y-1"
+                    style={{ animationDelay: `${idx * 0.18}s` }}
                   >
-                    {/* The Kinetic Moving Image Icon Pod */}
-                    <div
-                      className="relative animate-icon-float"
-                      style={{ animationDelay: `${idx * 0.28}s` }}
-                    >
-                      {/* Ambient Glow Aura */}
-                      <div className={`absolute -inset-1 rounded-2xl bg-gradient-to-r ${
-                        isActive 
-                          ? 'from-primary to-amber-400 opacity-80 blur-sm' 
-                          : 'from-primary/30 to-amber-500/30 opacity-0 group-hover:opacity-75 blur-sm'
-                      } transition-opacity duration-300 pointer-events-none`} />
+                    <ProductIcon productId={prod.id} className="w-10 h-10 sm:w-12 sm:h-12 drop-shadow-xs" />
+                  </div>
 
-                      {/* Realistic Image Container */}
-                      <div className={`relative w-13 h-13 xs:w-14 xs:h-14 sm:w-16 sm:h-16 md:w-18 md:h-18 lg:w-20 lg:h-20 rounded-2xl overflow-hidden bg-black/60 shadow-lg transition-transform duration-300 group-hover:scale-105 ${
-                        isActive 
-                          ? 'border-2 border-primary ring-2 ring-primary/40' 
-                          : 'border border-white/20 group-hover:border-amber-400/80'
-                      }`}>
-                        <img
-                          src={prod.image}
-                          alt={prod.name}
-                          className="w-full h-full object-cover group-hover:scale-115 transition-transform duration-500 ease-out select-none"
-                          loading="lazy"
-                        />
-
-                        {/* Glass Glossy Sheen Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/15 to-white/45 pointer-events-none" />
-
-                        {/* Active Indicator Pip */}
-                        {isActive && (
-                          <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-primary border border-white shadow-xs" />
-                        )}
-                      </div>
-
-                      {/* Dynamic Levitation Shadow beneath the icon */}
-                      <div
-                        className="w-9 xs:w-10 sm:w-12 md:w-14 h-1.5 sm:h-2 mx-auto rounded-full bg-black/60 blur-[3px] animate-icon-shadow mt-1.5 pointer-events-none"
-                        style={{ animationDelay: `${idx * 0.28}s` }}
-                      />
-                    </div>
-
-                    {/* Icon Label */}
-                    <span className={`mt-1 font-heading font-bold text-[11px] xs:text-xs sm:text-xs transition-colors line-clamp-1 ${
-                      isActive ? 'text-primary' : 'text-white/90 group-hover:text-amber-300'
-                    }`}>
-                      {prod.shortName || prod.name}
-                    </span>
-
-                    {/* Micro Subtitle on tablet/desktop */}
-                    <span className="text-[9px] sm:text-[10px] text-white/50 hidden sm:block truncate max-w-[80px]">
-                      {prod.highlight.split('&')[0].trim()}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+                  {/* Centered Label */}
+                  <span className={`mt-2.5 sm:mt-3 font-heading font-bold text-xs sm:text-sm transition-colors text-center leading-snug line-clamp-2 ${
+                    isActive ? 'text-primary' : 'text-ink group-hover:text-primary'
+                  }`}>
+                    {prod.shortName || prod.name}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
-          {/* ── PART B: INTERACTIVE SPOTLIGHT CARD FOR ACTIVE PRODUCT ── */}
+          {/* Active Product Spotlight & Fast WA Consultation Drawer */}
           {activeProduct && (
-            <div className="relative z-10 mt-6 pt-6 border-t border-white/10">
-              <div className="rounded-2xl bg-white/5 border border-white/15 p-4 sm:p-6 backdrop-blur-md flex flex-col md:flex-row gap-5 items-center">
-                
-                {/* Product Image Spotlight */}
-                <div className="w-full md:w-64 h-48 sm:h-56 md:h-44 rounded-xl overflow-hidden relative shrink-0 bg-black/50 border border-white/15 shadow-inner">
+            <div className="mt-6 pt-6 border-t border-line">
+              <div className="bg-canvas rounded-2xl border border-line p-4 sm:p-5 flex flex-col md:flex-row gap-4 sm:gap-6 items-center">
+                <div className="w-full md:w-56 h-40 sm:h-44 rounded-xl overflow-hidden relative shrink-0 bg-white border border-line shadow-xs">
                   <img
                     src={activeProduct.image}
                     alt={activeProduct.name}
-                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                    loading="lazy"
                   />
-                  <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-black/80 backdrop-blur-md text-amber-300 border border-amber-400/40">
-                      {activeProduct.badge}
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-primary text-white shadow-xs">
-                      {activeProduct.division === 'konveksi' ? 'Konveksi' : activeProduct.division === 'merchandise' ? 'Merchandise' : 'Percetakan'}
-                    </span>
-                  </div>
+                  <span className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-primary text-white shadow-xs">
+                    {activeProduct.badge}
+                  </span>
                 </div>
 
-                {/* Product Detail Content */}
-                <div className="flex-1 w-full space-y-3">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-amber-300">
-                        ✦ {activeProduct.highlight}
-                      </span>
-                    </div>
-                    <h3 className="font-heading font-extrabold text-lg sm:text-2xl text-white">
-                      {activeProduct.name}
-                    </h3>
+                <div className="flex-1 w-full space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-semibold text-primary uppercase tracking-wider">
+                      ✦ {activeProduct.highlight}
+                    </span>
                   </div>
-
-                  <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                  <h3 className="font-heading font-bold text-base sm:text-xl text-ink">
+                    {activeProduct.name}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-muted leading-relaxed">
                     {activeProduct.desc}
                   </p>
+                  <p className="text-xs text-muted">
+                    <strong className="text-ink">Pilihan Bahan:</strong> {activeProduct.material}
+                  </p>
 
-                  <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
-                    <span className="px-3 py-1 rounded-lg bg-white/10 border border-white/10 text-gray-200">
-                      <strong className="text-white">Material:</strong> {activeProduct.material}
-                    </span>
-                    <span className="px-3 py-1 rounded-lg bg-white/10 border border-white/10 text-gray-200">
-                      <strong className="text-white">Workshop:</strong> Semarang, Jawa Tengah
-                    </span>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="pt-2 flex flex-wrap items-center gap-3">
+                  <div className="pt-2 flex flex-wrap items-center gap-2.5">
                     <a
                       href={`https://wa.me/6281234567890?text=Halo%20Warunk%20Media,%20saya%20mau%20konsultasi%20pemesanan%20${encodeURIComponent(activeProduct.name)}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="px-4 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-xs font-bold inline-flex items-center gap-2 transition-all shadow-md active:scale-95 cursor-pointer"
+                      className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-control text-xs font-semibold inline-flex items-center gap-1.5 transition-colors shadow-xs active:scale-95"
                     >
-                      <MessageSquare className="w-4 h-4 text-brand-green" />
-                      <span>Pesan & Konsultasi {activeProduct.shortName} via WhatsApp</span>
+                      <MessageSquare className="w-4 h-4" />
+                      <span>Konsultasi {activeProduct.shortName} via WhatsApp</span>
                       <ArrowUpRight className="w-3.5 h-3.5" />
                     </a>
-                    
                     <button
                       type="button"
                       onClick={() => navigate('/cek-projek?code=WM-0012')}
-                      className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-semibold inline-flex items-center gap-1.5 transition-colors border border-white/10 cursor-pointer"
+                      className="px-3.5 py-2 bg-surface hover:bg-line/50 text-ink rounded-control text-xs font-semibold border border-line transition-colors cursor-pointer"
                     >
-                      <span>Lihat Simulasi Progres</span>
-                      <ChevronRight className="w-3.5 h-3.5" />
+                      Cek Demo Tracking &rarr;
                     </button>
                   </div>
                 </div>
-
               </div>
             </div>
           )}
 
-          {/* ── PART C: KATALOG LENGKAP DENGAN FILTER KATEGORI ── */}
-          <div className="relative z-10 pt-8 mt-6 border-t border-white/10">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-              <div>
-                <h3 className="font-heading font-bold text-base sm:text-lg text-white">
-                  Katalog Lengkap Spesialisasi
-                </h3>
-                <p className="text-xs text-gray-400">Pilih kategori untuk memfilter rincian pengerjaan.</p>
-              </div>
-
-              {/* Filter Buttons */}
-              <div className="flex flex-wrap items-center gap-1.5">
-                {[
-                  { key: 'all', label: 'Semua' },
-                  { key: 'konveksi', label: 'Konveksi' },
-                  { key: 'merchandise', label: 'Merchandise' },
-                  { key: 'percetakan', label: 'Percetakan' }
-                ].map((cat) => (
-                  <button
-                    key={cat.key}
-                    type="button"
-                    onClick={() => setSelectedCategory(cat.key)}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      selectedCategory === cat.key
-                        ? 'bg-primary text-white shadow-xs'
-                        : 'bg-white/5 text-white/70 hover:text-white hover:bg-white/10 border border-white/10'
-                    }`}
-                  >
-                    {cat.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-              {filteredProducts.map((item) => (
-                <div
-                  key={item.id}
-                  onClick={() => setActiveProductId(item.id)}
-                  className={`rounded-2xl bg-white/5 border p-3 sm:p-4 flex gap-3.5 items-center group transition-all cursor-pointer ${
-                    activeProductId === item.id 
-                      ? 'border-primary/80 bg-white/10 shadow-md' 
-                      : 'border-white/10 hover:border-white/20 hover:bg-white/8'
-                  }`}
-                >
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 relative bg-black/40">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5 mb-0.5">
-                      <span className="text-[9px] uppercase font-bold text-amber-300 bg-amber-400/10 px-1.5 py-0.5 rounded">
-                        {item.badge}
-                      </span>
-                    </div>
-                    <h4 className="font-heading font-bold text-xs sm:text-sm text-white truncate group-hover:text-primary transition-colors">
-                      {item.name}
-                    </h4>
-                    <p className="text-[11px] text-gray-300 truncate mt-0.5">
-                      {item.highlight}
-                    </p>
-                    <div className="text-[11px] font-bold text-primary hover:text-white inline-flex items-center gap-1 mt-1.5 transition-colors">
-                      <MessageSquare className="w-3 h-3 text-brand-green" />
-                      <span>Detail & Konsultasi &rarr;</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </section>
 

@@ -2,7 +2,7 @@ export const PRODUCTS = [
   // 1. Divisi Konveksi (Apparel & Garment)
   {
     id: 'kaos',
-    shortName: 'Kaos',
+    shortName: 'Kaos & Polo',
     name: 'Kaos & Polo Shirt',
     desc: 'Cotton Combed 24s/30s Jet Black & Lacoste CVC. Sablon Plastisol high density & cetak DTF tahan lama.',
     highlight: 'Sablon Plastisol & DTF',
@@ -14,7 +14,7 @@ export const PRODUCTS = [
   },
   {
     id: 'jaket',
-    shortName: 'Jaket',
+    shortName: 'Jaket & Hoodie',
     name: 'Jaket & Hoodie Komunitas',
     desc: 'Bahan Fleece tebal berbulu lembut, Taslan Milky waterproof & Parasut. Bordir komputer dada dan punggung.',
     highlight: 'Bordir Komputer & YKK',
@@ -26,7 +26,7 @@ export const PRODUCTS = [
   },
   {
     id: 'pdh',
-    shortName: 'PDH',
+    shortName: 'Kemeja PDH',
     name: 'Kemeja PDH & Korsa',
     desc: 'Nagata Drill & American Drill original. Pola slim/regular fit, kancing tersembunyi dan bordir nama rapi.',
     highlight: 'Bordir 3 Titik Presisi',
@@ -38,7 +38,7 @@ export const PRODUCTS = [
   },
   {
     id: 'topi',
-    shortName: 'Topi',
+    shortName: 'Topi Custom',
     name: 'Topi & Bucket Hat',
     desc: 'Topi baseball, snapback, trucker & bucket hat. Bordir timbul 3D dan jahitan rantai kokoh.',
     highlight: 'Bordir 3D Timbul',
@@ -51,7 +51,7 @@ export const PRODUCTS = [
   // 2. Divisi Merchandise & Percetakan (Sesuai Bio Resmi IG Warunk Media)
   {
     id: 'id_card',
-    shortName: 'ID Card',
+    shortName: 'ID Card & Lanyard',
     name: 'ID Card & Tali Lanyard',
     desc: 'Kartu PVC tebal standar ATM tahan air anti pudar + tali lanyard tisu sublimasi printing full color dua sisi.',
     highlight: 'Sublim Printing Full Color',
@@ -63,7 +63,7 @@ export const PRODUCTS = [
   },
   {
     id: 'slempang',
-    shortName: 'Slempang',
+    shortName: 'Slempang Wisuda',
     name: 'Slempang Wisuda Eksklusif',
     desc: 'Kain bludru tebal premium bertekstur mewah. Bordir nama benang emas/perak berkilau dengan renda rumbai elegan.',
     highlight: 'Bludru Bordir Emas Mewah',
@@ -75,7 +75,7 @@ export const PRODUCTS = [
   },
   {
     id: 'buku',
-    shortName: 'Buku',
+    shortName: 'Buku & Agenda',
     name: 'Buku Tahunan & Agenda',
     desc: 'Buku tahunan sekolah dan agenda eksklusif. Cover tebal board 30, jilid jahit benang dan lem panas tahan banting.',
     highlight: 'Hardcover & Spot UV',
@@ -87,7 +87,7 @@ export const PRODUCTS = [
   },
   {
     id: 'pin',
-    shortName: 'Pin',
+    shortName: 'Pin & Medali',
     name: 'Pin & Gantungan Kunci',
     desc: 'Pin peniti laminasi doff/glossy dan ganci akrilik laser-cut dua sisi anti gores. Cocok untuk merchandise event.',
     highlight: 'Akrilik Laser Cut Presisi',
@@ -99,7 +99,7 @@ export const PRODUCTS = [
   },
   {
     id: 'merchandise',
-    shortName: 'Merchandise',
+    shortName: 'Merchandise Kit',
     name: 'Merchandise & Seminar Kit',
     desc: 'Paket seminar kit lengkap: tote bag kanvas tebal, pouch serbaguna, mug keramik printing, dan tumbler grafir.',
     highlight: 'Custom Logo Cetak/Grafir',
@@ -108,6 +108,18 @@ export const PRODUCTS = [
     image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&auto=format&fit=crop&q=80',
     icon: 'Package',
     division: 'merchandise'
+  },
+  {
+    id: 'banner',
+    shortName: 'Spanduk & Banner',
+    name: 'Spanduk & Banner Promosi',
+    desc: 'Cetak spanduk MMT outdoor tahan cuaca, X-Banner & Roll Banner display portable untuk event, promosi kampus, dan pameran.',
+    highlight: 'Cetak Hi-Res Tahan Air',
+    material: 'Flexi Korchin & Frontlite 340gr',
+    badge: 'Promosi',
+    image: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=800&auto=format&fit=crop&q=80',
+    icon: 'Flag',
+    division: 'percetakan'
   },
 ];
 

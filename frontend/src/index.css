@@ -86,6 +86,15 @@ select {
   }
 }
 
+@keyframes icon-bounce-gentle {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-5px) scale(1.04);
+  }
+}
+
 @keyframes icon-shadow {
   0%, 100% {
     transform: scale(1);
@@ -99,6 +108,10 @@ select {
 
 .animate-icon-float {
   animation: icon-float 3.2s ease-in-out infinite;
+}
+
+.animate-icon-bounce-gentle {
+  animation: icon-bounce-gentle 2.8s ease-in-out infinite;
 }
 
 .animate-icon-shadow {
