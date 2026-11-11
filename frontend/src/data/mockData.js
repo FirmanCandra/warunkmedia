@@ -1,15 +1,105 @@
 export const PRODUCTS = [
   // 1. Divisi Konveksi (Apparel & Garment)
-  { id: 'kaos', name: 'Kaos & Polo', desc: 'Cotton Combed 24s/30s, Lacoste CVC, Sablon Plastisol & DTF.', icon: 'Shirt', division: 'konveksi' },
-  { id: 'jaket', name: 'Jaket & Hoodie', desc: 'Fleece tebal, Parasut Taslan, Bomber, Varsity, Bordir Komputer.', icon: 'Layers', division: 'konveksi' },
-  { id: 'pdh', name: 'PDH / Kemeja', desc: 'Nagata Drill, American Drill, kemeja angkatan, instansi & organisasi.', icon: 'Briefcase', division: 'konveksi' },
-  { id: 'topi', name: 'Topi & Bucket', desc: 'Topi baseball, snapback, trucker, bucket hat custom bordir presisi.', icon: 'HardHat', division: 'konveksi' },
+  {
+    id: 'kaos',
+    name: 'Kaos & Polo Shirt',
+    desc: 'Cotton Combed 24s/30s Jet Black & Lacoste CVC. Sablon Plastisol high density & cetak DTF tahan lama.',
+    highlight: 'Sablon Plastisol & DTF',
+    material: 'Cotton Combed 24s/30s',
+    badge: 'Terlaris',
+    image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop&q=80',
+    icon: 'Shirt',
+    division: 'konveksi'
+  },
+  {
+    id: 'jaket',
+    name: 'Jaket & Hoodie Komunitas',
+    desc: 'Bahan Fleece tebal berbulu lembut, Taslan Milky waterproof & Parasut. Bordir komputer dada dan punggung.',
+    highlight: 'Bordir Komputer & YKK',
+    material: 'Taslan Milky & Fleece Tebal',
+    badge: 'Komunitas',
+    image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&auto=format&fit=crop&q=80',
+    icon: 'Layers',
+    division: 'konveksi'
+  },
+  {
+    id: 'pdh',
+    name: 'Kemeja PDH & Korsa',
+    desc: 'Nagata Drill & American Drill original. Pola slim/regular fit, kancing tersembunyi dan bordir nama rapi.',
+    highlight: 'Bordir 3 Titik Presisi',
+    material: 'Nagata Drill Original',
+    badge: 'Organisasi',
+    image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800&auto=format&fit=crop&q=80',
+    icon: 'Briefcase',
+    division: 'konveksi'
+  },
+  {
+    id: 'topi',
+    name: 'Topi & Bucket Hat',
+    desc: 'Topi baseball, snapback, trucker & bucket hat. Bordir timbul 3D dan jahitan rantai kokoh.',
+    highlight: 'Bordir 3D Timbul',
+    material: 'Twill Rafel & Drill',
+    badge: 'Custom',
+    image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=800&auto=format&fit=crop&q=80',
+    icon: 'HardHat',
+    division: 'konveksi'
+  },
   // 2. Divisi Merchandise & Percetakan (Sesuai Bio Resmi IG Warunk Media)
-  { id: 'id_card', name: 'ID Card & Lanyard', desc: 'Kartu PVC tahan air standar ATM + tali lanyard sublimasi printing 2 sisi.', icon: 'CreditCard', division: 'merchandise' },
-  { id: 'slempang', name: 'Slempang Wisuda', desc: 'Bahan bludru premium & satin, bordir nama emas/perak, list renda rumbai.', icon: 'Award', division: 'merchandise' },
-  { id: 'buku', name: 'Buku & Agenda', desc: 'Buku tahunan sekolah, agenda eksklusif, jilid hard cover & lem panas.', icon: 'BookOpen', division: 'percetakan' },
-  { id: 'pin', name: 'Pin & Gantungan Kunci', desc: 'Pin peniti doff/glossy, ganci akrilik custom dua sisi, souvenir event.', icon: 'Sparkles', division: 'merchandise' },
-  { id: 'merchandise', name: 'Marchandise Lain', desc: 'Tote bag kanvas, pouch, mug printing, plakat seminar kit lengkap.', icon: 'Package', division: 'merchandise' },
+  {
+    id: 'id_card',
+    name: 'ID Card & Tali Lanyard',
+    desc: 'Kartu PVC tebal standar ATM tahan air anti pudar + tali lanyard tisu sublimasi printing full color dua sisi.',
+    highlight: 'Sublim Printing Full Color',
+    material: 'PVC ATM & Tali Tisu Halus',
+    badge: 'Panitia Event',
+    image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80',
+    icon: 'CreditCard',
+    division: 'merchandise'
+  },
+  {
+    id: 'slempang',
+    name: 'Slempang Wisuda Eksklusif',
+    desc: 'Kain bludru tebal premium bertekstur mewah. Bordir nama benang emas/perak berkilau dengan renda rumbai elegan.',
+    highlight: 'Bludru Bordir Emas Mewah',
+    material: 'Bludru Premium & Renda Rumbai',
+    badge: 'Wisuda',
+    image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&auto=format&fit=crop&q=80',
+    icon: 'Award',
+    division: 'merchandise'
+  },
+  {
+    id: 'buku',
+    name: 'Buku Tahunan & Agenda',
+    desc: 'Buku tahunan sekolah dan agenda eksklusif. Cover tebal board 30, jilid jahit benang dan lem panas tahan banting.',
+    highlight: 'Hardcover & Spot UV',
+    material: 'Art Paper 150gr Full Color',
+    badge: 'Edisi Lux',
+    image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&auto=format&fit=crop&q=80',
+    icon: 'BookOpen',
+    division: 'percetakan'
+  },
+  {
+    id: 'pin',
+    name: 'Pin & Gantungan Kunci',
+    desc: 'Pin peniti laminasi doff/glossy dan ganci akrilik laser-cut dua sisi anti gores. Cocok untuk merchandise event.',
+    highlight: 'Akrilik Laser Cut Presisi',
+    material: 'Akrilik Bening & Peniti Awet',
+    badge: 'Souvenir',
+    image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=800&auto=format&fit=crop&q=80',
+    icon: 'Sparkles',
+    division: 'merchandise'
+  },
+  {
+    id: 'merchandise',
+    name: 'Merchandise & Seminar Kit',
+    desc: 'Paket seminar kit lengkap: tote bag kanvas tebal, pouch serbaguna, mug keramik printing, dan tumbler grafir.',
+    highlight: 'Custom Logo Cetak/Grafir',
+    material: 'Kanvas Tebal & Keramik',
+    badge: 'Seminar Kit',
+    image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&auto=format&fit=crop&q=80',
+    icon: 'Package',
+    division: 'merchandise'
+  },
 ];
 
 export const WORKFLOW_CONFIG = {

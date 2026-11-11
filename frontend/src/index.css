@@ -76,6 +76,57 @@ select {
   padding-bottom: env(safe-area-inset-bottom, 20px);
 }
 
+/* Moving Luxury Showcase Animations */
+@keyframes luxury-marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-luxury-marquee {
+  display: flex;
+  width: max-content;
+  animation: luxury-marquee 40s linear infinite;
+}
+
+.animate-luxury-marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes luxury-shimmer {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateX(200%);
+    opacity: 0;
+  }
+}
+
+.animate-luxury-shimmer {
+  animation: luxury-shimmer 3.5s ease-in-out infinite;
+}
+
+@keyframes subtle-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-float-slow {
+  animation: subtle-float 5s ease-in-out infinite;
+}
+
 /* Print styling for Invoice & Worksheet */
 @media print {
   .no-print {
