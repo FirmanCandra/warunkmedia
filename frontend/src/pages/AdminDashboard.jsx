@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Plus, Users, Trash2, Camera, Upload, 
   X, FileText, Receipt, Package, MessageSquare, Mail, Phone,
-  Search, Filter, CheckCircle2, Clock, Calendar, Check
+  Search, CheckCircle2, Clock, Calendar, Check
 } from 'lucide-react';
 import { 
   PRODUCTION_STAGES, INITIAL_ORDERS, INITIAL_CUSTOMERS, 
@@ -10,44 +10,68 @@ import {
 } from '../data/mockData';
 import WorksheetModal from '../components/WorksheetModal';
 import InvoiceModal from '../components/InvoiceModal';
+import { useAdmin } from '../context/adminContextDef';
 
-// ─── Executive KPI Card Component (Inspired by Sebaris.id) ───────────────────
-function KpiCard({ label, value, sub, icon: Icon, iconBg, accent }) {
+// ─── Executive KPI Card Component (Anti-Collision, Mobile-First) ──────────────
+function KpiCard({ label, value, compactValue, sub, icon: Icon, iconBg, accent }) {
   return (
-    <div className="bg-surface border border-line rounded-2xl p-4 sm:p-5 flex items-center justify-between gap-3 shadow-xs transition-shadow hover:shadow-sm">
-      <div className="min-w-0">
-        <span className="block text-[10px] font-extrabold uppercase tracking-wider text-muted mb-1">
+    <div className="bg-surface border border-line rounded-2xl p-3.5 sm:p-5 flex flex-col justify-between shadow-2xs transition-shadow hover:shadow-xs min-w-0">
+      {/* Top Row: Label & Icon placed side by side */}
+      <div className="flex items-start justify-between gap-2 mb-2">
+        <span className="block text-[10px] font-extrabold uppercase tracking-wider text-muted truncate">
           {label}
         </span>
-        <span className={`block text-xl sm:text-2xl font-black leading-tight ${accent || 'text-ink'}`}>
-          {value}
+        <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shrink-0 ${iconBg}`}>
+          <Icon className="w-4 h-4" />
+        </div>
+      </div>
+
+      {/* Bottom Row: Large Value taking 100% card width, never colliding */}
+      <div className="min-w-0">
+        <span
+          className={`block text-lg sm:text-2xl font-black leading-tight truncate ${accent || 'text-ink'}`}
+          title={value}
+        >
+          {compactValue ? (
+            <>
+              <span className="sm:hidden">{compactValue}</span>
+              <span className="hidden sm:inline">{value}</span>
+            </>
+          ) : (
+            value
+          )}
         </span>
         {sub && (
-          <span className="block text-[11px] text-muted mt-1 font-medium truncate">
+          <span className="block text-[10px] sm:text-xs text-muted mt-1 font-medium truncate">
             {sub}
           </span>
         )}
-      </div>
-      <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${iconBg}`}>
-        <Icon className="w-5 h-5" />
       </div>
     </div>
   );
 }
 
 export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders }) {
-  const [orderList, setOrderList] = useState(orders);
-  const [activeTab, setActiveTab] = useState('orders'); // 'orders' | 'customers'
+  const {
+    activeTab,
+    selectedDivision,
+    setSelectedDivision,
+    showNewOrderModal,
+    setShowNewOrderModal,
+    showNewCustomerModal,
+    setShowNewCustomerModal,
+    setCounts,
+  } = useAdmin();
+
   const [customerList, setCustomerList] = useState(INITIAL_CUSTOMERS);
+
+  // Modals state
   const [selectedOrderForProgress, setSelectedOrderForProgress] = useState(null);
-  const [showNewOrderModal, setShowNewOrderModal] = useState(false);
-  const [showNewCustomerModal, setShowNewCustomerModal] = useState(false);
   const [selectedWorksheet, setSelectedWorksheet] = useState(null);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
 
-  // Filter & Search State
+  // Local Filter & Search State
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedDivision, setSelectedDivision] = useState(''); // '' | 'apparel' | 'merchandise' | 'percetakan'
   const [selectedStatus, setSelectedStatus] = useState(''); // '' | 'progress' | 'completed' | 'waiting'
   const [customerSearchQuery, setCustomerSearchQuery] = useState('');
 
@@ -76,21 +100,31 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
   });
 
   // ─── KPI Calculations ───────────────────────────────────────────────────────
-  const totalOrdersCount = orderList.length;
+  const totalOrdersCount = orders.length;
   const inProgressOrdersCount = useMemo(
-    () => orderList.filter((o) => o.statusVariant !== 'completed').length,
-    [orderList]
+    () => orders.filter((o) => o.statusVariant !== 'completed').length,
+    [orders]
   );
   const completedOrdersCount = useMemo(
-    () => orderList.filter((o) => o.statusVariant === 'completed').length,
-    [orderList]
+    () => orders.filter((o) => o.statusVariant === 'completed').length,
+    [orders]
   );
   const totalProductionValue = useMemo(() => {
-    return orderList.reduce((acc, ord) => {
+    return orders.reduce((acc, ord) => {
       const val = ord.invoice?.total || (ord.quantity * 45000);
       return acc + val;
     }, 0);
-  }, [orderList]);
+  }, [orders]);
+
+  // Sync badge counts back to sidebar
+  useEffect(() => {
+    setCounts({
+      totalOrders: totalOrdersCount,
+      inProgress: inProgressOrdersCount,
+      completed: completedOrdersCount,
+      customers: customerList.length,
+    });
+  }, [totalOrdersCount, inProgressOrdersCount, completedOrdersCount, customerList.length, setCounts]);
 
   const formatIDR = (val) => {
     return new Intl.NumberFormat('id-ID', {
@@ -101,10 +135,18 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
     }).format(val);
   };
 
+  const formatCompactIDR = (val) => {
+    if (val >= 1000000) {
+      const inJt = (val / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 });
+      return `Rp ${inJt} Jt`;
+    }
+    return formatIDR(val);
+  };
+
   // ─── Filtered Orders ────────────────────────────────────────────────────────
   const filteredOrders = useMemo(() => {
-    return orderList.filter((ord) => {
-      // 1. Search filter (ID, Customer Name, Product Name, Category)
+    return orders.filter((ord) => {
+      // 1. Search query
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
         const matchesCode = ord.id?.toLowerCase().includes(q);
@@ -116,7 +158,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
         }
       }
 
-      // 2. Division filter
+      // 2. Division filter (synced with sidebar)
       if (selectedDivision) {
         const wf = ord.workflowType || getWorkflowForCategory(ord.category).type;
         if (wf !== selectedDivision) {
@@ -133,7 +175,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
 
       return true;
     });
-  }, [orderList, searchQuery, selectedDivision, selectedStatus]);
+  }, [orders, searchQuery, selectedDivision, selectedStatus]);
 
   // ─── Filtered Customers ────────────────────────────────────────────────────
   const filteredCustomers = useMemo(() => {
@@ -179,14 +221,12 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
     const stageName = stageObj ? (stageObj.stageName || stageObj.name) : stageId;
     const stageIdx = stages.findIndex((s) => (s.stageId || s.id) === stageId);
 
-    const updated = orderList.map((ord) => {
+    const updated = orders.map((ord) => {
       if (ord.id === selectedOrderForProgress.id) {
-        // Update status text
         const isCompleted = stageId === 'selesai';
         const newStatusText = isCompleted ? 'Selesai' : stageName;
         const newVariant = isCompleted ? 'completed' : 'progress';
 
-        // Update timeline
         const newTimeline = ord.timeline.map((step, idx) => {
           if (step.stageId === stageId) {
             return {
@@ -215,7 +255,6 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
       return ord;
     });
 
-    setOrderList(updated);
     if (onUpdateOrders) onUpdateOrders(updated);
     setSelectedOrderForProgress(null);
     setPhotoPreviews([]);
@@ -225,10 +264,9 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
   // ── Simpan Worksheet yang Diedit ─────────────────────────────────────────────
   const handleSaveWorksheet = (updatedWorksheet) => {
     if (!selectedWorksheet) return;
-    const nextList = orderList.map((ord) =>
+    const nextList = orders.map((ord) =>
       ord.id === selectedWorksheet.id ? { ...ord, worksheet: updatedWorksheet } : ord
     );
-    setOrderList(nextList);
     if (onUpdateOrders) onUpdateOrders(nextList);
     setSelectedWorksheet(null);
   };
@@ -236,10 +274,9 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
   // ── Simpan Invoice yang Diedit ───────────────────────────────────────────────
   const handleSaveInvoice = (updatedInvoice) => {
     if (!selectedInvoice) return;
-    const nextList = orderList.map((ord) =>
+    const nextList = orders.map((ord) =>
       ord.id === selectedInvoice.id ? { ...ord, invoice: updatedInvoice } : ord
     );
-    setOrderList(nextList);
     if (onUpdateOrders) onUpdateOrders(nextList);
     setSelectedInvoice(null);
   };
@@ -247,7 +284,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
   // Simpan Pesanan Baru
   const handleCreateOrder = (e) => {
     e.preventDefault();
-    const newCode = `WM-00${orderList.length + 10}`;
+    const newCode = `WM-00${orders.length + 10}`;
     const wf = getWorkflowForCategory(newOrder.category);
     const isApparel = wf.type === 'apparel';
 
@@ -294,7 +331,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
         deadline: newOrder.deadline,
       },
       invoice: {
-        invoiceNumber: `INV/2026/WM/${orderList.length + 10}`,
+        invoiceNumber: `INV/2026/WM/${orders.length + 10}`,
         date: new Date().toISOString().slice(0, 10),
         items: [{ name: newOrder.productName, qty: newOrder.quantity, price: 45000, total: newOrder.quantity * 45000 }],
         total: newOrder.quantity * 45000,
@@ -305,8 +342,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
       },
     };
 
-    const nextList = [created, ...orderList];
-    setOrderList(nextList);
+    const nextList = [created, ...orders];
     if (onUpdateOrders) onUpdateOrders(nextList);
     setShowNewOrderModal(false);
     setNewOrder({
@@ -348,64 +384,15 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
   // Hapus Pesanan
   const handleDeleteOrder = (id) => {
     if (window.confirm(`Yakin ingin menghapus pesanan ${id}? Tindakan ini tidak dapat dibatalkan.`)) {
-      const nextList = orderList.filter((o) => o.id !== id);
-      setOrderList(nextList);
+      const nextList = orders.filter((o) => o.id !== id);
       if (onUpdateOrders) onUpdateOrders(nextList);
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
-      {/* ── Page Header (Executive Style inspired by Sebaris.id) ── */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-line">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
-              Panel Manajemen Workshop
-            </span>
-            <span className="text-xs text-muted">· Semarang, Indonesia</span>
-          </div>
-          <h1 className="font-heading font-extrabold text-2xl sm:text-3xl text-ink tracking-tight">
-            Dashboard Produksi & Order Tracking
-          </h1>
-          <p className="text-xs sm:text-sm text-muted mt-1 max-w-2xl">
-            Statistik real-time pesanan konveksi & merchandise, kontrol tahapan pengerjaan, unggah bukti foto produksi, dan manajemen customer.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2.5">
-          {activeTab === 'orders' ? (
-            <button
-              onClick={() => setShowNewOrderModal(true)}
-              className="px-4 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-xs hover:shadow"
-            >
-              <Plus className="w-4 h-4" />
-              <span>+ Buat Pesanan Baru</span>
-            </button>
-          ) : (
-            <button
-              onClick={() => setShowNewCustomerModal(true)}
-              className="px-4 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-xs hover:shadow"
-            >
-              <Plus className="w-4 h-4" />
-              <span>+ Tambah Customer</span>
-            </button>
-          )}
-
-          <a
-            href="https://wa.me/6281234567890"
-            target="_blank"
-            rel="noreferrer"
-            className="px-3.5 py-2.5 bg-surface hover:bg-canvas text-ink border border-line rounded-xl text-xs font-bold flex items-center gap-2 transition-colors shadow-xs"
-          >
-            <MessageSquare className="w-4 h-4 text-brand-green" />
-            <span className="hidden sm:inline">WhatsApp Workshop</span>
-          </a>
-        </div>
-      </div>
-
-      {/* ── KPI Summary Cards (Inspired by Sebaris.id) ── */}
-      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4" aria-label="Ringkasan Statistik Produksi">
+    <div className="space-y-5 sm:space-y-6">
+      {/* ── 1. KPI SUMMARY STRIP (Anti-Overlap Layout) ── */}
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4" aria-label="Statistik Produksi">
         <KpiCard
           label="Total Pesanan"
           value={totalOrdersCount}
@@ -416,7 +403,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
         <KpiCard
           label="Sedang Diproduksi"
           value={inProgressOrdersCount}
-          sub="Dalam antrean & pengerjaan"
+          sub="Antrean & pengerjaan"
           icon={Clock}
           iconBg="bg-amber-500/10 text-amber-600"
           accent="text-amber-600"
@@ -432,43 +419,31 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
         <KpiCard
           label="Nilai Produksi"
           value={formatIDR(totalProductionValue)}
-          sub="Akumulasi tagihan pesanan"
+          compactValue={formatCompactIDR(totalProductionValue)}
+          sub="Akumulasi tagihan"
           icon={Receipt}
           iconBg="bg-sky-500/10 text-sky-600"
           accent="text-ink"
         />
       </section>
 
-      {/* ── Global Filter & Search Bar (Inspired by Sebaris.id) ── */}
+      {/* =========================================================================
+          2. TAB 1: DAFTAR PESANAN PRODUKSI
+          ========================================================================= */}
       {activeTab === 'orders' && (
-        <section
-          className="bg-surface border border-line rounded-2xl p-4 sm:p-5 shadow-xs space-y-3"
-          aria-label="Filter statistik pesanan"
-        >
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                <Filter className="w-5 h-5" />
-              </div>
-              <div>
-                <h2 className="text-sm font-extrabold text-ink">Filter & Pencarian Pesanan</h2>
-                <p className="text-[11px] text-muted">
-                  Cari cepat kode pesanan (WM-...), nama customer, jenis produk, atau saring per divisi pengerjaan.
-                </p>
-              </div>
-            </div>
-
-            {/* Filter Controls */}
-            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+        <div className="space-y-4">
+          {/* Filter & Toolbar */}
+          <div className="bg-surface border border-line rounded-2xl p-3.5 sm:p-4 shadow-xs space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               {/* Search Box */}
-              <div className="relative flex-1 sm:flex-initial min-w-[200px]">
+              <div className="relative flex-1 max-w-md">
                 <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Cari kode, customer, produk..."
-                  className="w-full h-9.5 pl-8 pr-7 text-xs bg-canvas border border-line rounded-xl focus:outline-none focus:ring-1 focus:ring-primary text-ink font-medium"
+                  placeholder="Cari kode (WM-...), customer, nama produk..."
+                  className="w-full h-9 pl-8 pr-7 text-xs bg-canvas border border-line rounded-xl focus:outline-none focus:ring-1 focus:ring-primary text-ink font-medium"
                 />
                 {searchQuery && (
                   <button
@@ -481,171 +456,89 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                 )}
               </div>
 
-              {/* Division Dropdown */}
-              <select
-                value={selectedDivision}
-                onChange={(e) => setSelectedDivision(e.target.value)}
-                className="h-9.5 px-3 text-xs font-semibold bg-canvas border border-line rounded-xl text-ink focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
-              >
-                <option value="">Semua Divisi</option>
-                <option value="apparel">Divisi Konveksi (Apparel)</option>
-                <option value="merchandise">Divisi Merchandise</option>
-                <option value="percetakan">Divisi Percetakan & Buku</option>
-              </select>
-
               {/* Status Dropdown */}
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="h-9.5 px-3 text-xs font-semibold bg-canvas border border-line rounded-xl text-ink focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
-              >
-                <option value="">Semua Status</option>
-                <option value="progress">Sedang Diproduksi</option>
-                <option value="completed">Pesanan Selesai</option>
-                <option value="waiting">Menunggu Antrian / Desain</option>
-              </select>
-
-              {/* Reset Filter Button */}
-              {(searchQuery || selectedDivision || selectedStatus) && (
-                <button
-                  type="button"
-                  onClick={handleResetFilters}
-                  className="h-9.5 px-3 rounded-xl border border-red-200 bg-red-50 text-primary text-xs font-bold flex items-center gap-1.5 hover:bg-red-100 transition-colors"
-                  title="Reset semua filter"
+              <div className="flex items-center gap-2">
+                <select
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  className="h-9 px-3 text-xs font-semibold bg-canvas border border-line rounded-xl text-ink focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
                 >
-                  <X className="w-3.5 h-3.5" />
-                  <span>Reset</span>
-                </button>
-              )}
+                  <option value="">Semua Status</option>
+                  <option value="progress">Sedang Diproduksi</option>
+                  <option value="completed">Pesanan Selesai</option>
+                  <option value="waiting">Menunggu Antrian / Desain</option>
+                </select>
+
+                {(searchQuery || selectedDivision || selectedStatus) && (
+                  <button
+                    type="button"
+                    onClick={handleResetFilters}
+                    className="h-9 px-3 rounded-xl border border-red-200 bg-red-50 text-primary text-xs font-bold flex items-center gap-1 hover:bg-red-100 transition-colors"
+                    title="Reset semua filter"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                    <span>Reset</span>
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
 
-          {/* Active Filter State Badges */}
-          {(searchQuery || selectedDivision || selectedStatus) && (
-            <div className="pt-2.5 border-t border-line flex flex-wrap items-center gap-2 text-xs">
-              <span className="text-[11px] font-bold text-muted">Filter Aktif:</span>
-              {searchQuery && (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-primary/10 text-primary font-bold text-xs">
-                  <span>Kata Kunci: "{searchQuery}"</span>
+            {/* Active Filters Badges */}
+            {(searchQuery || selectedDivision || selectedStatus) && (
+              <div className="pt-2 border-t border-line/60 flex flex-wrap items-center gap-2 text-xs">
+                <span className="text-[10px] font-bold text-muted uppercase">Filter:</span>
+                {selectedDivision && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-primary/10 text-primary font-bold text-[11px]">
+                    Divisi: {selectedDivision === 'apparel' ? 'Konveksi' : selectedDivision === 'merchandise' ? 'Merchandise' : 'Percetakan'}
+                  </span>
+                )}
+                {selectedStatus && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-amber-50 text-amber-700 font-bold text-[11px]">
+                    Status: {selectedStatus === 'completed' ? 'Selesai' : selectedStatus === 'progress' ? 'Sedang Diproduksi' : 'Antrian'}
+                  </span>
+                )}
+                {searchQuery && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-canvas border border-line text-ink font-bold text-[11px]">
+                    "{searchQuery}"
+                  </span>
+                )}
+                <span className="text-[11px] text-muted ml-auto font-medium">
+                  {filteredOrders.length} pesanan ditemukan
                 </span>
-              )}
-              {selectedDivision && (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#EBF7E3] text-[#48781B] font-bold text-xs">
-                  <span>Divisi: {selectedDivision === 'apparel' ? 'Konveksi' : selectedDivision === 'merchandise' ? 'Merchandise' : 'Percetakan'}</span>
-                </span>
-              )}
-              {selectedStatus && (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-50 text-amber-700 font-bold text-xs">
-                  <span>Status: {selectedStatus === 'completed' ? 'Selesai' : selectedStatus === 'progress' ? 'Produksi Berjalan' : 'Antrian'}</span>
-                </span>
-              )}
-              <span className="text-[11px] text-muted ml-auto font-medium">
-                Ditemukan {filteredOrders.length} dari {orderList.length} pesanan
-              </span>
-            </div>
-          )}
-        </section>
-      )}
-
-      {/* ── Tab Switcher: Orders vs Customers ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-line pb-3">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setActiveTab('orders')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
-              activeTab === 'orders'
-                ? 'bg-primary text-white shadow-xs'
-                : 'bg-surface text-muted hover:text-ink border border-line'
-            }`}
-          >
-            <Package className="w-4 h-4" />
-            <span>Daftar Pesanan Produksi</span>
-            <span
-              className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
-                activeTab === 'orders' ? 'bg-white/20 text-white' : 'bg-canvas text-muted border border-line'
-              }`}
-            >
-              {filteredOrders.length}
-            </span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('customers')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
-              activeTab === 'customers'
-                ? 'bg-primary text-white shadow-xs'
-                : 'bg-surface text-muted hover:text-ink border border-line'
-            }`}
-          >
-            <Users className="w-4 h-4" />
-            <span>Data Customer / Participant</span>
-            <span
-              className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
-                activeTab === 'customers' ? 'bg-white/20 text-white' : 'bg-canvas text-muted border border-line'
-              }`}
-            >
-              {customerList.length}
-            </span>
-          </button>
-        </div>
-
-        {activeTab === 'customers' && (
-          <div className="relative min-w-[220px]">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-            <input
-              type="text"
-              value={customerSearchQuery}
-              onChange={(e) => setCustomerSearchQuery(e.target.value)}
-              placeholder="Cari nama, telp, email..."
-              className="w-full h-9 pl-8 pr-7 text-xs bg-surface border border-line rounded-xl focus:outline-none focus:ring-1 focus:ring-primary text-ink"
-            />
-            {customerSearchQuery && (
-              <button
-                onClick={() => setCustomerSearchQuery('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted hover:text-ink"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
+              </div>
             )}
           </div>
-        )}
-      </div>
 
-      {/* ── TAB 1: DAFTAR PESANAN (Executive Table & Mobile Cards) ── */}
-      {activeTab === 'orders' && (
-        <>
+          {/* Orders Content View */}
           {filteredOrders.length === 0 ? (
-            <div className="bg-surface rounded-2xl border border-line p-10 text-center space-y-3 shadow-xs">
-              <Package className="w-10 h-10 mx-auto text-muted/40" />
-              <h3 className="text-sm font-bold text-ink">Tidak ada pesanan yang sesuai</h3>
-              <p className="text-xs text-muted max-w-md mx-auto">
-                {searchQuery || selectedDivision || selectedStatus
-                  ? 'Tidak ditemukan pesanan yang cocok dengan kriteria filter. Coba ubah kata kunci atau klik reset filter.'
-                  : 'Belum ada pesanan terdaftar di sistem. Klik tombol "+ Buat Pesanan Baru" untuk menambahkan.'}
+            <div className="bg-surface rounded-2xl border border-line p-10 text-center space-y-3">
+              <Package className="w-8 h-8 mx-auto text-muted/40" />
+              <p className="text-sm font-bold text-ink">Tidak ada pesanan yang sesuai</p>
+              <p className="text-xs text-muted max-w-sm mx-auto">
+                Coba ubah kata kunci pencarian atau reset filter divisi dan status di panel samping.
               </p>
-              {(searchQuery || selectedDivision || selectedStatus) && (
-                <button
-                  onClick={handleResetFilters}
-                  className="px-4 py-2 bg-primary text-white text-xs font-semibold rounded-xl hover:bg-primary-dark transition-colors inline-block mt-2"
-                >
-                  Reset Semua Filter
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="px-4 py-2 bg-canvas hover:bg-line border border-line rounded-xl text-xs font-bold text-ink transition-colors"
+              >
+                Reset Semua Filter
+              </button>
             </div>
           ) : (
             <div className="space-y-4">
-              {/* Desktop Table View */}
+              {/* DESKTOP TABLE VIEW (hidden on mobile, visible on lg) */}
               <div className="hidden lg:block bg-surface rounded-2xl border border-line overflow-hidden shadow-xs">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse text-xs">
                     <thead>
                       <tr className="bg-canvas border-b border-line text-muted uppercase font-bold text-[11px] tracking-wider">
-                        <th className="py-3.5 px-4">Kode Pesanan</th>
-                        <th className="py-3.5 px-4">Customer & Kontak</th>
-                        <th className="py-3.5 px-4">Rincian Produk</th>
-                        <th className="py-3.5 px-4">Deadline</th>
-                        <th className="py-3.5 px-4">Tahapan Progres</th>
-                        <th className="py-3.5 px-4 text-right">Aksi Manajemen</th>
+                        <th className="py-3 px-4">Kode</th>
+                        <th className="py-3 px-4">Customer</th>
+                        <th className="py-3 px-4">Rincian Produk</th>
+                        <th className="py-3 px-4">Deadline</th>
+                        <th className="py-3 px-4">Tahapan Progres</th>
+                        <th className="py-3 px-4 text-right">Aksi</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-line">
@@ -658,7 +551,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                         return (
                           <tr key={ord.id} className="hover:bg-canvas/50 transition-colors">
                             {/* Kode Pesanan */}
-                            <td className="py-4 px-4 align-top">
+                            <td className="py-3.5 px-4 align-top">
                               <span className="font-mono font-bold text-primary bg-primary/5 px-2.5 py-1 rounded-md border border-primary/20 inline-block">
                                 {ord.id}
                               </span>
@@ -668,7 +561,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                             </td>
 
                             {/* Customer & Kontak */}
-                            <td className="py-4 px-4 align-top">
+                            <td className="py-3.5 px-4 align-top">
                               <div className="font-bold text-ink text-xs">{ord.customerName}</div>
                               <div className="flex items-center gap-1.5 mt-0.5">
                                 <a
@@ -685,7 +578,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                             </td>
 
                             {/* Rincian Produk */}
-                            <td className="py-4 px-4 align-top">
+                            <td className="py-3.5 px-4 align-top">
                               <div className="font-bold text-ink">{ord.productName}</div>
                               <div className="flex items-center gap-1.5 mt-1">
                                 <span className="px-2 py-0.5 bg-canvas border border-line rounded text-[10px] font-bold text-ink">
@@ -698,7 +591,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                             </td>
 
                             {/* Deadline */}
-                            <td className="py-4 px-4 align-top">
+                            <td className="py-3.5 px-4 align-top">
                               <div className="flex items-center gap-1.5 text-ink font-semibold">
                                 <Calendar className="w-3.5 h-3.5 text-muted" />
                                 <span>{ord.deadline}</span>
@@ -709,7 +602,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                             </td>
 
                             {/* Tahapan Progres */}
-                            <td className="py-4 px-4 align-top min-w-[180px]">
+                            <td className="py-3.5 px-4 align-top min-w-[170px]">
                               <div className="flex items-center gap-1.5">
                                 <span
                                   className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
@@ -742,7 +635,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                             </td>
 
                             {/* Aksi */}
-                            <td className="py-4 px-4 text-right align-top">
+                            <td className="py-3.5 px-4 text-right align-top">
                               <div className="flex items-center justify-end gap-1.5">
                                 <button
                                   onClick={() => {
@@ -754,12 +647,13 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                                     setNotes('');
                                     setPhotoPreviews([]);
                                   }}
-                                  className="px-3 py-1.5 bg-primary hover:bg-primary-dark text-white rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-colors shadow-xs"
+                                  className="px-2.5 py-1.5 bg-primary hover:bg-primary-dark text-white rounded-lg text-[11px] font-bold flex items-center gap-1 transition-colors shadow-xs"
                                   title="Update Tahap & Unggah Bukti Foto"
                                 >
                                   <Camera className="w-3.5 h-3.5" />
                                   <span>Update Progres</span>
                                 </button>
+
                                 <button
                                   onClick={() => setSelectedWorksheet(ord)}
                                   className="inline-flex items-center gap-1 px-2.5 py-1.5 hover:bg-canvas border border-line rounded-lg text-[11px] font-bold text-ink transition-colors shadow-2xs"
@@ -768,6 +662,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                                   <FileText className="w-3.5 h-3.5 text-primary" />
                                   <span>Worksheet</span>
                                 </button>
+
                                 <button
                                   onClick={() => setSelectedInvoice(ord)}
                                   className="inline-flex items-center gap-1 px-2.5 py-1.5 hover:bg-canvas border border-line rounded-lg text-[11px] font-bold text-ink transition-colors shadow-2xs"
@@ -776,6 +671,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                                   <Receipt className="w-3.5 h-3.5 text-brand-green" />
                                   <span>Invoice</span>
                                 </button>
+
                                 <button
                                   onClick={() => handleDeleteOrder(ord.id)}
                                   className="p-1.5 hover:bg-red-50 border border-line hover:border-red-300 rounded-lg text-red-600 transition-colors"
@@ -793,7 +689,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                 </div>
               </div>
 
-              {/* Mobile Cards View (Optimized for small screens) */}
+              {/* MOBILE CARDS VIEW (visible on phone/tablet, hidden on lg) */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:hidden gap-3">
                 {filteredOrders.map((ord) => {
                   const totalStages = ord.timeline?.length || 6;
@@ -804,7 +700,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                   return (
                     <div
                       key={ord.id}
-                      className="bg-surface rounded-2xl border border-line p-4 shadow-xs space-y-3.5"
+                      className="bg-surface rounded-2xl border border-line p-4 shadow-xs space-y-3"
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div>
@@ -812,7 +708,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                             {ord.id}
                           </span>
                           <span className="ml-2 text-[11px] text-muted">
-                            Masuk: {ord.orderDate || '2026-11-01'}
+                            {ord.orderDate || '2026-11-01'}
                           </span>
                         </div>
                         <span
@@ -836,7 +732,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                         </p>
                       </div>
 
-                      <div className="bg-canvas rounded-xl p-3 space-y-2 border border-line/60">
+                      <div className="bg-canvas rounded-xl p-3 space-y-1.5 border border-line/60">
                         <div className="flex items-center justify-between text-xs">
                           <span className="text-muted font-medium">Customer:</span>
                           <span className="font-bold text-ink">{ord.customerName}</span>
@@ -878,7 +774,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                         </div>
                       </div>
 
-                      {/* Card Action Buttons */}
+                      {/* Card Action Buttons (Two rows, zero awkward clipping) */}
                       <div className="pt-2 border-t border-line space-y-2">
                         <button
                           onClick={() => {
@@ -926,102 +822,203 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
               </div>
             </div>
           )}
-        </>
+        </div>
       )}
 
-      {/* ── TAB 2: DAFTAR CUSTOMER / PARTICIPANT ── */}
+      {/* =========================================================================
+          3. TAB 2: DATA CUSTOMER / PARTICIPANT
+          ========================================================================= */}
       {activeTab === 'customers' && (
-        <div className="bg-surface rounded-2xl border border-line overflow-hidden shadow-xs">
+        <div className="space-y-4">
+          {/* Customer Toolbar */}
+          <div className="bg-surface border border-line rounded-2xl p-3.5 sm:p-4 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="relative flex-1 max-w-md">
+              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+              <input
+                type="text"
+                value={customerSearchQuery}
+                onChange={(e) => setCustomerSearchQuery(e.target.value)}
+                placeholder="Cari nama, telp WhatsApp, atau email..."
+                className="w-full h-9 pl-8 pr-7 text-xs bg-canvas border border-line rounded-xl focus:outline-none focus:ring-1 focus:ring-primary text-ink font-medium"
+              />
+              {customerSearchQuery && (
+                <button
+                  onClick={() => setCustomerSearchQuery('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted hover:text-ink"
+                  title="Hapus pencarian"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowNewCustomerModal(true)}
+              className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors shadow-xs shrink-0"
+            >
+              <Plus className="w-4 h-4" />
+              <span>+ Tambah Customer Baru</span>
+            </button>
+          </div>
+
+          {/* Customer Content View */}
           {filteredCustomers.length === 0 ? (
-            <div className="p-10 text-center space-y-2">
+            <div className="bg-surface rounded-2xl border border-line p-10 text-center space-y-2">
               <Users className="w-8 h-8 mx-auto text-muted/40" />
               <p className="text-sm font-bold text-ink">Tidak ada customer ditemukan</p>
               <p className="text-xs text-muted">
                 {customerSearchQuery
-                  ? 'Tidak ada customer yang sesuai dengan pencarian.'
+                  ? 'Tidak ada data customer yang sesuai dengan pencarian.'
                   : 'Belum ada data customer terdaftar.'}
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="bg-canvas border-b border-line text-muted uppercase font-bold text-[11px] tracking-wider">
-                    <th className="py-3.5 px-4">Nama Customer / Organisasi</th>
-                    <th className="py-3.5 px-4">Kontak WhatsApp</th>
-                    <th className="py-3.5 px-4">Alamat Email</th>
-                    <th className="py-3.5 px-4 text-center">Pesanan Terdaftar</th>
-                    <th className="py-3.5 px-4 text-right">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-line">
-                  {filteredCustomers.map((cust) => {
-                    const custOrdersCount = orderList.filter(
-                      (o) => o.customerName?.toLowerCase() === cust.name?.toLowerCase()
-                    ).length;
-
-                    return (
-                      <tr key={cust.id} className="hover:bg-canvas/50 transition-colors">
-                        <td className="py-3.5 px-4 font-semibold text-ink">
-                          <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">
-                              {cust.name.charAt(0)}
-                            </div>
-                            <div>
-                              <div className="font-bold text-ink">{cust.name}</div>
-                              <div className="text-[10px] text-muted">ID: CUST-{String(cust.id).padStart(2, '0')}</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-3.5 px-4 text-ink font-mono text-xs">
-                          <div className="flex items-center gap-1.5">
-                            <Phone className="w-3.5 h-3.5 text-muted" />
-                            <span>{cust.phone}</span>
-                          </div>
-                        </td>
-                        <td className="py-3.5 px-4 text-muted">
-                          <div className="flex items-center gap-1.5">
-                            <Mail className="w-3.5 h-3.5 text-muted" />
-                            <span>{cust.email}</span>
-                          </div>
-                        </td>
-                        <td className="py-3.5 px-4 text-center">
-                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-canvas border border-line text-ink">
-                            {custOrdersCount} pesanan
-                          </span>
-                        </td>
-                        <td className="py-3.5 px-4 text-right">
-                          <div className="flex items-center justify-end gap-1.5">
-                            <a
-                              href={`https://wa.me/${cust.phone.replace(/[^0-9]/g, '')}?text=Halo%20${encodeURIComponent(cust.name)},%20kami%20dari%20Warunk%20Media%20Semarang`}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="px-3 py-1.5 bg-brand-green/10 hover:bg-brand-green/20 text-brand-green border border-brand-green/30 rounded-xl text-[11px] font-bold flex items-center gap-1 transition-colors"
-                              title="Chat via WhatsApp"
-                            >
-                              <MessageSquare className="w-3.5 h-3.5" />
-                              <span>Chat WA</span>
-                            </a>
-                            <button
-                              onClick={() => handleDeleteCustomer(cust.id)}
-                              className="p-1.5 hover:bg-red-50 border border-line hover:border-red-300 rounded-xl text-red-600 transition-colors"
-                              title="Hapus Customer"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </td>
+            <div className="space-y-3">
+              {/* DESKTOP TABLE VIEW (hidden on mobile, visible on md/lg) */}
+              <div className="hidden md:block bg-surface rounded-2xl border border-line overflow-hidden shadow-xs">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="bg-canvas border-b border-line text-muted uppercase font-bold text-[11px] tracking-wider">
+                        <th className="py-3 px-4">Nama Customer / Organisasi</th>
+                        <th className="py-3 px-4">Kontak WhatsApp</th>
+                        <th className="py-3 px-4">Alamat Email</th>
+                        <th className="py-3 px-4 text-center">Pesanan Terdaftar</th>
+                        <th className="py-3 px-4 text-right">Aksi</th>
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                    </thead>
+                    <tbody className="divide-y divide-line">
+                      {filteredCustomers.map((cust) => {
+                        const custOrdersCount = orders.filter(
+                          (o) => o.customerName?.toLowerCase() === cust.name?.toLowerCase()
+                        ).length;
+
+                        return (
+                          <tr key={cust.id} className="hover:bg-canvas/50 transition-colors">
+                            <td className="py-3.5 px-4 font-semibold text-ink">
+                              <div className="flex items-center gap-2.5">
+                                <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">
+                                  {cust.name.charAt(0)}
+                                </div>
+                                <div>
+                                  <div className="font-bold text-ink">{cust.name}</div>
+                                  <div className="text-[10px] text-muted">ID: CUST-{String(cust.id).padStart(2, '0')}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="py-3.5 px-4 text-ink font-mono text-xs">
+                              <div className="flex items-center gap-1.5">
+                                <Phone className="w-3.5 h-3.5 text-muted" />
+                                <span>{cust.phone}</span>
+                              </div>
+                            </td>
+                            <td className="py-3.5 px-4 text-muted">
+                              <div className="flex items-center gap-1.5">
+                                <Mail className="w-3.5 h-3.5 text-muted" />
+                                <span>{cust.email}</span>
+                              </div>
+                            </td>
+                            <td className="py-3.5 px-4 text-center">
+                              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-canvas border border-line text-ink">
+                                {custOrdersCount} pesanan
+                              </span>
+                            </td>
+                            <td className="py-3.5 px-4 text-right">
+                              <div className="flex items-center justify-end gap-1.5">
+                                <a
+                                  href={`https://wa.me/${cust.phone.replace(/[^0-9]/g, '')}?text=Halo%20${encodeURIComponent(cust.name)},%20kami%20dari%20Warunk%20Media%20Semarang`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="px-3 py-1.5 bg-brand-green/10 hover:bg-brand-green/20 text-brand-green border border-brand-green/30 rounded-xl text-[11px] font-bold flex items-center gap-1 transition-colors"
+                                  title="Chat via WhatsApp"
+                                >
+                                  <MessageSquare className="w-3.5 h-3.5" />
+                                  <span>Chat WA</span>
+                                </a>
+                                <button
+                                  onClick={() => handleDeleteCustomer(cust.id)}
+                                  className="p-1.5 hover:bg-red-50 border border-line hover:border-red-300 rounded-xl text-red-600 transition-colors"
+                                  title="Hapus Customer"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* MOBILE CARDS VIEW FOR CUSTOMERS (Anti-Overflow Mobile Cards) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:hidden gap-3">
+                {filteredCustomers.map((cust) => {
+                  const custOrdersCount = orders.filter(
+                    (o) => o.customerName?.toLowerCase() === cust.name?.toLowerCase()
+                  ).length;
+
+                  return (
+                    <div
+                      key={cust.id}
+                      className="bg-surface rounded-2xl border border-line p-4 shadow-xs space-y-3"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-9 h-9 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center justify-center shrink-0">
+                            {cust.name.charAt(0)}
+                          </div>
+                          <div className="min-w-0">
+                            <h4 className="font-heading font-bold text-sm text-ink truncate">{cust.name}</h4>
+                            <span className="text-[10px] text-muted">ID: CUST-{String(cust.id).padStart(2, '0')}</span>
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() => handleDeleteCustomer(cust.id)}
+                          className="p-1.5 hover:bg-red-50 border border-line hover:border-red-300 rounded-xl text-red-600 transition-colors"
+                          title="Hapus Customer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+
+                      <div className="bg-canvas rounded-xl p-2.5 border border-line/60 space-y-1 text-xs">
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted">Email:</span>
+                          <span className="text-ink font-medium truncate max-w-[170px]">{cust.email || '-'}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted">Total Order:</span>
+                          <span className="font-bold text-primary">{custOrdersCount} pesanan</span>
+                        </div>
+                      </div>
+
+                      <a
+                        href={`https://wa.me/${cust.phone.replace(/[^0-9]/g, '')}?text=Halo%20${encodeURIComponent(cust.name)},%20kami%20dari%20Warunk%20Media%20Semarang`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="w-full py-2 bg-brand-green/10 hover:bg-brand-green/20 text-brand-green border border-brand-green/30 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                      >
+                        <MessageSquare className="w-3.5 h-3.5" />
+                        <span>Chat WhatsApp ({cust.phone})</span>
+                      </a>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
       )}
 
-      {/* ── Modal Form: Update Progres & Unggah Foto (Wireframe Hal 4) ── */}
+      {/* =========================================================================
+          4. MODALS (Update Progres, Pesanan Baru, Customer Baru, Worksheet, Invoice)
+          ========================================================================= */}
+
+      {/* Modal Form: Update Progres & Unggah Foto */}
       {selectedOrderForProgress && (
         <div
           className="fixed inset-0 z-60 bg-black/75 overflow-y-auto backdrop-blur-xs flex justify-center p-0 sm:p-4"
@@ -1052,52 +1049,49 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
             </div>
 
             <form onSubmit={handleSaveProgress} className="space-y-4 text-xs">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="font-bold text-ink block mb-1">Pilih Tahapan Produksi</label>
-                  <select
-                    value={stageId}
-                    onChange={(e) => setStageId(e.target.value)}
-                    className="w-full px-3 py-2 bg-canvas border border-line rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary"
-                  >
-                    {(selectedOrderForProgress.timeline || PRODUCTION_STAGES).map((stg) => (
-                      <option key={stg.stageId || stg.id} value={stg.stageId || stg.id}>
-                        {stg.stageName || stg.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="font-bold text-ink block mb-1">Tanggal & Waktu Update</label>
-                  <input
-                    type="datetime-local"
-                    value={updateDate}
-                    onChange={(e) => setUpdateDate(e.target.value)}
-                    className="w-full px-3 py-2 bg-canvas border border-line rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-primary font-medium"
-                  />
-                </div>
+              <div>
+                <label className="font-bold text-ink block mb-1">Tahapan Produksi Terkini</label>
+                <select
+                  value={stageId}
+                  onChange={(e) => setStageId(e.target.value)}
+                  className="w-full px-3 py-2.5 bg-canvas border border-line rounded-xl text-xs font-semibold focus:ring-1 focus:ring-primary"
+                >
+                  {(selectedOrderForProgress.timeline || PRODUCTION_STAGES).map((stg) => (
+                    <option key={stg.stageId || stg.id} value={stg.stageId || stg.id}>
+                      {stg.stageName || stg.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="font-bold text-ink block mb-1">Waktu / Tanggal Update</label>
+                <input
+                  type="datetime-local"
+                  value={updateDate}
+                  onChange={(e) => setUpdateDate(e.target.value)}
+                  className="w-full px-3 py-2 bg-canvas border border-line rounded-xl text-xs focus:ring-1 focus:ring-primary"
+                />
               </div>
 
               <div>
                 <label className="font-bold text-ink block mb-1">Catatan Pengerjaan untuk Customer</label>
                 <textarea
-                  rows={3}
+                  rows="3"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Misal: Sablon depan selesai, lanjut bordir komputer punggung belakang dan masuk tahap jahit."
-                  className="w-full px-3 py-2 bg-canvas border border-line rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-primary leading-relaxed"
+                  placeholder="Contoh: Sablon plastisol bagian depan selesai 40 pcs, lanjut pengeringan sebelum jahit."
+                  className="w-full px-3 py-2 bg-canvas border border-line rounded-xl text-xs focus:ring-1 focus:ring-primary"
                 />
               </div>
 
-              {/* Unggah Foto Bukti */}
+              {/* Upload Foto Bukti */}
               <div>
-                <label className="font-bold text-ink block mb-1">
-                  Unggah Foto Bukti Workshop (Bisa Lebih dari Satu)
-                </label>
-                <label className="border-2 border-dashed border-line hover:border-primary rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer bg-canvas/50 hover:bg-canvas transition-colors">
-                  <Upload className="w-6 h-6 text-primary mb-1" />
-                  <span className="font-bold text-ink">Klik untuk pilih foto pengerjaan</span>
-                  <span className="text-[11px] text-muted">Format JPG atau PNG (Maks 5MB per foto)</span>
+                <label className="font-bold text-ink block mb-1">Unggah Foto Bukti Produksi</label>
+                <label className="border-2 border-dashed border-line hover:border-primary rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer bg-canvas/50 transition-colors">
+                  <Upload className="w-6 h-6 text-muted mb-1" />
+                  <span className="font-bold text-ink text-xs">Klik untuk pilih foto dari galeri / kamera HP</span>
+                  <span className="text-[10px] text-muted mt-0.5">Format JPG, PNG (Maks 5MB per foto)</span>
                   <input
                     type="file"
                     multiple
@@ -1107,18 +1101,17 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                   />
                 </label>
 
-                {/* Preview Foto */}
                 {photoPreviews.length > 0 && (
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {photoPreviews.map((src, idx) => (
-                      <div key={idx} className="relative w-16 h-16 rounded-xl overflow-hidden border border-line shadow-2xs group">
-                        <img src={src} alt="Preview Bukti" className="w-full h-full object-cover" />
+                    {photoPreviews.map((preview, idx) => (
+                      <div key={idx} className="relative w-16 h-16 rounded-lg overflow-hidden border border-line group">
+                        <img src={preview} alt="Preview" className="w-full h-full object-cover" />
                         <button
                           type="button"
                           onClick={() => removePhoto(idx)}
-                          className="absolute top-1 right-1 bg-black/75 hover:bg-black text-white p-0.5 rounded-full transition-colors"
+                          className="absolute inset-0 bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                         >
-                          <X className="w-3 h-3" />
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     ))}
@@ -1138,7 +1131,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                   type="submit"
                   className="px-5 py-2 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold shadow-xs transition-colors"
                 >
-                  Simpan Pembaruan Progres
+                  Simpan Progres
                 </button>
               </div>
             </form>
@@ -1146,7 +1139,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
         </div>
       )}
 
-      {/* ── Modal Form: + Pesanan Baru ── */}
+      {/* Modal: Tambah Pesanan Baru */}
       {showNewOrderModal && (
         <div
           className="fixed inset-0 z-60 bg-black/75 overflow-y-auto backdrop-blur-xs flex justify-center p-0 sm:p-4"
@@ -1157,14 +1150,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between pb-3 mb-4 border-b border-line">
-              <div>
-                <h3 className="font-heading font-extrabold text-lg text-ink">
-                  + Buat Pesanan Baru
-                </h3>
-                <p className="text-xs text-muted">
-                  Registrasi pesanan konveksi, merchandise, atau percetakan baru ke sistem tracking.
-                </p>
-              </div>
+              <h3 className="font-heading font-extrabold text-lg text-ink">Buat Pesanan Baru</h3>
               <button
                 onClick={() => setShowNewOrderModal(false)}
                 className="p-1.5 hover:bg-canvas rounded-xl text-muted hover:text-ink transition-colors"
@@ -1175,13 +1161,13 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
 
             <form onSubmit={handleCreateOrder} className="space-y-3.5 text-xs">
               <div>
-                <label className="font-bold text-ink block mb-1">Nama Customer / Instansi</label>
+                <label className="font-bold text-ink block mb-1">Nama Customer / Organisasi</label>
                 <input
                   type="text"
                   required
                   value={newOrder.customerName}
                   onChange={(e) => setNewOrder({ ...newOrder, customerName: e.target.value })}
-                  placeholder="Misal: Firman Candra / BEM Undip"
+                  placeholder="Misal: BEM Universitas Diponegoro"
                   className="w-full px-3 py-2 bg-canvas border border-line rounded-xl text-xs focus:ring-1 focus:ring-primary"
                 />
               </div>
@@ -1190,50 +1176,34 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                 <label className="font-bold text-ink block mb-1">Nomor WhatsApp Customer</label>
                 <input
                   type="text"
+                  required
                   value={newOrder.customerPhone}
                   onChange={(e) => setNewOrder({ ...newOrder, customerPhone: e.target.value })}
-                  placeholder="Misal: 0812-3456-7890"
-                  className="w-full px-3 py-2 bg-canvas border border-line rounded-xl text-xs focus:ring-1 focus:ring-primary"
+                  placeholder="0812-3456-7890"
+                  className="w-full px-3 py-2 bg-canvas border border-line rounded-xl text-xs font-mono focus:ring-1 focus:ring-primary"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold text-ink block mb-1">Nama Item Pesanan</label>
-                  <input
-                    type="text"
-                    required
-                    value={newOrder.productName}
-                    onChange={(e) => setNewOrder({ ...newOrder, productName: e.target.value })}
-                    placeholder="Misal: Kaos Reuni Angkatan 2026"
-                    className="w-full px-3 py-2 bg-canvas border border-line rounded-xl text-xs focus:ring-1 focus:ring-primary"
-                  />
-                </div>
-                <div>
-                  <label className="font-bold text-ink block mb-1">Kategori & Divisi</label>
+                  <label className="font-bold text-ink block mb-1">Kategori Produk</label>
                   <select
                     value={newOrder.category}
                     onChange={(e) => setNewOrder({ ...newOrder, category: e.target.value })}
-                    className="w-full px-3 py-2 bg-canvas border border-line rounded-xl text-xs focus:ring-1 focus:ring-primary font-medium"
+                    className="w-full px-3 py-2 bg-canvas border border-line rounded-xl text-xs font-semibold focus:ring-1 focus:ring-primary"
                   >
-                    <optgroup label="Divisi Konveksi (Apparel)">
-                      <option value="Kaos & Polo">Kaos & Polo</option>
-                      <option value="Jaket & Hoodie">Jaket & Hoodie</option>
-                      <option value="PDH / Kemeja">PDH / Kemeja</option>
-                      <option value="Topi & Bucket">Topi & Bucket</option>
-                    </optgroup>
-                    <optgroup label="Divisi Merchandise & Percetakan (Bio IG)">
-                      <option value="ID Card & Lanyard">ID Card & Lanyard</option>
-                      <option value="Slempang Wisuda">Slempang Wisuda</option>
-                      <option value="Buku & Agenda">Buku & Agenda</option>
-                      <option value="Pin & Gantungan Kunci">Pin & Gantungan Kunci</option>
-                      <option value="Marchandise Lain">Marchandise Lain</option>
-                    </optgroup>
+                    <option value="Kaos & Polo">Kaos & Polo (Apparel)</option>
+                    <option value="Jaket & Hoodie">Jaket & Hoodie (Apparel)</option>
+                    <option value="PDH / Kemeja">PDH / Kemeja (Apparel)</option>
+                    <option value="Topi & Bucket">Topi & Bucket (Apparel)</option>
+                    <option value="ID Card & Lanyard">ID Card & Lanyard (Merchandise)</option>
+                    <option value="Slempang Wisuda">Slempang Wisuda (Merchandise)</option>
+                    <option value="Pin & Bros">Pin & Gantungan (Merchandise)</option>
+                    <option value="Buku & Agenda">Buku & Agenda (Percetakan)</option>
+                    <option value="Merchandise Lain">Merchandise Lainnya</option>
                   </select>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="font-bold text-ink block mb-1">Jumlah Pesanan (Pcs)</label>
                   <input
@@ -1245,25 +1215,38 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                     className="w-full px-3 py-2 bg-canvas border border-line rounded-xl text-xs focus:ring-1 focus:ring-primary"
                   />
                 </div>
-                <div>
-                  <label className="font-bold text-ink block mb-1">Target Selesai (Deadline)</label>
-                  <input
-                    type="date"
-                    required
-                    value={newOrder.deadline}
-                    onChange={(e) => setNewOrder({ ...newOrder, deadline: e.target.value })}
-                    className="w-full px-3 py-2 bg-canvas border border-line rounded-xl text-xs focus:ring-1 focus:ring-primary font-medium"
-                  />
-                </div>
               </div>
 
               <div>
-                <label className="font-bold text-ink block mb-1">Catatan Spesifikasi Khusus</label>
+                <label className="font-bold text-ink block mb-1">Nama / Deskripsi Produk</label>
+                <input
+                  type="text"
+                  required
+                  value={newOrder.productName}
+                  onChange={(e) => setNewOrder({ ...newOrder, productName: e.target.value })}
+                  placeholder="Misal: Kaos Panitia LDK 2026 Bahan Combed 24s"
+                  className="w-full px-3 py-2 bg-canvas border border-line rounded-xl text-xs focus:ring-1 focus:ring-primary"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-ink block mb-1">Target Selesai (Deadline)</label>
+                <input
+                  type="date"
+                  required
+                  value={newOrder.deadline}
+                  onChange={(e) => setNewOrder({ ...newOrder, deadline: e.target.value })}
+                  className="w-full px-3 py-2 bg-canvas border border-line rounded-xl text-xs focus:ring-1 focus:ring-primary"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-ink block mb-1">Catatan Tambahan (Opsional)</label>
                 <textarea
-                  rows={2}
+                  rows="2"
                   value={newOrder.notes}
                   onChange={(e) => setNewOrder({ ...newOrder, notes: e.target.value })}
-                  placeholder="Catatan bahan, warna kain, jenis sablon / bordir, rincian ukuran"
+                  placeholder="Catatan sablon, spesifikasi bahan, atau info pengiriman..."
                   className="w-full px-3 py-2 bg-canvas border border-line rounded-xl text-xs focus:ring-1 focus:ring-primary"
                 />
               </div>
@@ -1280,7 +1263,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                   type="submit"
                   className="px-5 py-2 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold shadow-xs transition-colors"
                 >
-                  Buat Pesanan & Buatkan Kode
+                  Simpan Pesanan
                 </button>
               </div>
             </form>
@@ -1288,25 +1271,18 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
         </div>
       )}
 
-      {/* ── Modal Form: + Tambah Customer Baru ── */}
+      {/* Modal: Tambah Customer Baru */}
       {showNewCustomerModal && (
         <div
           className="fixed inset-0 z-60 bg-black/75 overflow-y-auto backdrop-blur-xs flex justify-center p-0 sm:p-4"
           onClick={() => setShowNewCustomerModal(false)}
         >
           <div
-            className="relative w-full max-w-md bg-surface sm:rounded-2xl border border-line shadow-2xl p-5 sm:p-7 my-0 sm:my-8 min-h-screen sm:min-h-0"
+            className="relative w-full max-w-md bg-surface sm:rounded-2xl border border-line shadow-2xl p-5 sm:p-8 my-0 sm:my-6 min-h-screen sm:min-h-0"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between pb-3 mb-4 border-b border-line">
-              <div>
-                <h3 className="font-heading font-extrabold text-base text-ink">
-                  + Tambah Data Customer
-                </h3>
-                <p className="text-xs text-muted">
-                  Daftarkan profil customer atau koordinator organisasi.
-                </p>
-              </div>
+              <h3 className="font-heading font-extrabold text-lg text-ink">Tambah Customer Baru</h3>
               <button
                 onClick={() => setShowNewCustomerModal(false)}
                 className="p-1.5 hover:bg-canvas rounded-xl text-muted hover:text-ink transition-colors"
@@ -1317,26 +1293,26 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
 
             <form onSubmit={handleCreateCustomer} className="space-y-3.5 text-xs">
               <div>
-                <label className="font-bold text-ink block mb-1">Nama Customer / Organisasi</label>
+                <label className="font-bold text-ink block mb-1">Nama Lengkap / Organisasi</label>
                 <input
                   type="text"
                   required
                   value={newCustomer.name}
                   onChange={(e) => setNewCustomer({ ...newCustomer, name: e.target.value })}
-                  placeholder="Misal: BEM Universitas Diponegoro"
+                  placeholder="Misal: Panitia Dies Natalis FT"
                   className="w-full px-3 py-2 bg-canvas border border-line rounded-xl text-xs focus:ring-1 focus:ring-primary"
                 />
               </div>
 
               <div>
-                <label className="font-bold text-ink block mb-1">Nomor WhatsApp Aktif</label>
+                <label className="font-bold text-ink block mb-1">Nomor WhatsApp</label>
                 <input
                   type="text"
                   required
                   value={newCustomer.phone}
                   onChange={(e) => setNewCustomer({ ...newCustomer, phone: e.target.value })}
-                  placeholder="Misal: 0812-3456-7890"
-                  className="w-full px-3 py-2 bg-canvas border border-line rounded-xl text-xs focus:ring-1 focus:ring-primary"
+                  placeholder="0812-3456-7890"
+                  className="w-full px-3 py-2 bg-canvas border border-line rounded-xl text-xs font-mono focus:ring-1 focus:ring-primary"
                 />
               </div>
 
@@ -1346,7 +1322,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                   type="email"
                   value={newCustomer.email}
                   onChange={(e) => setNewCustomer({ ...newCustomer, email: e.target.value })}
-                  placeholder="Misal: kontak@organisasi.com"
+                  placeholder="kontak@organisasi.com"
                   className="w-full px-3 py-2 bg-canvas border border-line rounded-xl text-xs focus:ring-1 focus:ring-primary"
                 />
               </div>
