@@ -76,6 +76,35 @@ select {
   padding-bottom: env(safe-area-inset-bottom, 20px);
 }
 
+/* Moving Animated Product Icons (Kinetic Floating & Dynamic Shadow) */
+@keyframes icon-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1deg);
+  }
+}
+
+@keyframes icon-shadow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(0.60);
+    opacity: 0.12;
+  }
+}
+
+.animate-icon-float {
+  animation: icon-float 3.2s ease-in-out infinite;
+}
+
+.animate-icon-shadow {
+  animation: icon-shadow 3.2s ease-in-out infinite;
+}
+
 /* Moving Luxury Showcase Animations */
 @keyframes luxury-marquee {
   0% {
