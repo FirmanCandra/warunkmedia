@@ -108,10 +108,11 @@ export default function WorksheetModal({ order, onClose, isAdmin = false, onSave
             {isAdmin && !editMode && (
               <button
                 onClick={() => setEditMode(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-canvas hover:bg-line border border-line rounded-xl text-xs font-bold text-ink transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-xl text-xs font-bold text-primary transition-colors"
+                title="Buka mode pengeditan worksheet"
               >
-                <Edit3 className="w-3.5 h-3.5 text-primary" />
-                <span>Edit</span>
+                <Edit3 className="w-3.5 h-3.5" />
+                <span>Edit Worksheet</span>
               </button>
             )}
             {isAdmin && editMode && (

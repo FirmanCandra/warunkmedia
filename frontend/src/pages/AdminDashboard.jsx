@@ -762,17 +762,19 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                                 </button>
                                 <button
                                   onClick={() => setSelectedWorksheet(ord)}
-                                  className="p-1.5 hover:bg-canvas border border-line rounded-lg text-muted hover:text-ink transition-colors"
-                                  title="Lihat Lembar Kerja (Worksheet)"
+                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 hover:bg-canvas border border-line rounded-lg text-[11px] font-bold text-ink transition-colors shadow-2xs"
+                                  title="Lihat & Edit Lembar Kerja (Worksheet)"
                                 >
-                                  <FileText className="w-4 h-4" />
+                                  <FileText className="w-3.5 h-3.5 text-primary" />
+                                  <span>Worksheet</span>
                                 </button>
                                 <button
                                   onClick={() => setSelectedInvoice(ord)}
-                                  className="p-1.5 hover:bg-canvas border border-line rounded-lg text-muted hover:text-ink transition-colors"
-                                  title="Lihat Invoice Pesanan"
+                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 hover:bg-canvas border border-line rounded-lg text-[11px] font-bold text-ink transition-colors shadow-2xs"
+                                  title="Lihat & Edit Invoice Pesanan"
                                 >
-                                  <Receipt className="w-4 h-4" />
+                                  <Receipt className="w-3.5 h-3.5 text-brand-green" />
+                                  <span>Invoice</span>
                                 </button>
                                 <button
                                   onClick={() => handleDeleteOrder(ord.id)}
@@ -877,7 +879,7 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                       </div>
 
                       {/* Card Action Buttons */}
-                      <div className="pt-2 border-t border-line flex items-center justify-between gap-2">
+                      <div className="pt-2 border-t border-line space-y-2">
                         <button
                           onClick={() => {
                             setSelectedOrderForProgress(ord);
@@ -888,33 +890,35 @@ export default function AdminDashboard({ orders = INITIAL_ORDERS, onUpdateOrders
                             setNotes('');
                             setPhotoPreviews([]);
                           }}
-                          className="flex-1 py-2 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+                          className="w-full py-2 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
                         >
                           <Camera className="w-3.5 h-3.5" />
-                          <span>Update Progres</span>
+                          <span>Update Progres & Foto Bukti</span>
                         </button>
 
-                        <button
-                          onClick={() => setSelectedWorksheet(ord)}
-                          className="p-2 hover:bg-canvas border border-line rounded-xl text-muted hover:text-ink transition-colors"
-                          title="Worksheet"
-                        >
-                          <FileText className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => setSelectedInvoice(ord)}
-                          className="p-2 hover:bg-canvas border border-line rounded-xl text-muted hover:text-ink transition-colors"
-                          title="Invoice"
-                        >
-                          <Receipt className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteOrder(ord.id)}
-                          className="p-2 hover:bg-red-50 border border-line hover:border-red-300 rounded-xl text-red-600 transition-colors"
-                          title="Hapus"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => setSelectedWorksheet(ord)}
+                            className="flex-1 py-1.5 px-2 bg-canvas hover:bg-line border border-line rounded-xl text-ink text-xs font-bold flex items-center justify-center gap-1 transition-colors"
+                          >
+                            <FileText className="w-3.5 h-3.5 text-primary" />
+                            <span>Worksheet</span>
+                          </button>
+                          <button
+                            onClick={() => setSelectedInvoice(ord)}
+                            className="flex-1 py-1.5 px-2 bg-canvas hover:bg-line border border-line rounded-xl text-ink text-xs font-bold flex items-center justify-center gap-1 transition-colors"
+                          >
+                            <Receipt className="w-3.5 h-3.5 text-brand-green" />
+                            <span>Invoice</span>
+                          </button>
+                          <button
+                            onClick={() => handleDeleteOrder(ord.id)}
+                            className="p-2 hover:bg-red-50 border border-line hover:border-red-300 rounded-xl text-red-600 transition-colors"
+                            title="Hapus Pesanan"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   );

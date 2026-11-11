@@ -136,15 +136,6 @@ export default function Navbar({ currentUser, onLogout }) {
           >
             Berandaku
           </Link>
-          <a href="/#alur-projek" className="px-4 py-2.5 hover:bg-primary-dark transition-colors">
-            Alur Projek
-          </a>
-          <a href="/#proses-projek" className="px-4 py-2.5 hover:bg-primary-dark transition-colors">
-            Proses Projek
-          </a>
-          <a href="/#deadline-projek" className="px-4 py-2.5 hover:bg-primary-dark transition-colors">
-            Deadline Projek
-          </a>
           {currentUser?.role === 'admin' && (
             <Link
               to="/admin"

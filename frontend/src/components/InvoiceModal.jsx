@@ -118,10 +118,11 @@ export default function InvoiceModal({ order, onClose, isAdmin = false, onSave }
             {isAdmin && !editMode && (
               <button
                 onClick={() => setEditMode(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-canvas hover:bg-line border border-line rounded-xl text-xs font-bold text-ink transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-green/10 hover:bg-brand-green/20 border border-brand-green/30 rounded-xl text-xs font-bold text-brand-green transition-colors"
+                title="Buka mode pengeditan invoice"
               >
-                <Edit3 className="w-3.5 h-3.5 text-primary" />
-                <span>Edit</span>
+                <Edit3 className="w-3.5 h-3.5" />
+                <span>Edit Invoice</span>
               </button>
             )}
             {isAdmin && editMode && (

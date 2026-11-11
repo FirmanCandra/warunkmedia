@@ -22,8 +22,8 @@ export default function OrderCard({
     }
   };
 
-  // Progress percentage calculation (out of 6 stages)
-  const totalStages = 6;
+  // Dynamic stages calculation (apparel: 6, merchandise: 5, printing: 5)
+  const totalStages = order.timeline?.length || 6;
   const currentStageIndex = order.currentStageIndex ?? 0;
   const progressPercent = Math.min(
     100,
@@ -71,7 +71,7 @@ export default function OrderCard({
           {/* Progress Bar */}
           <div className="mt-3 max-w-md">
             <div className="flex justify-between items-center text-[11px] mb-1">
-              <span className="text-muted">Progres: Tahap {currentStageIndex + 1} dari {totalStages}</span>
+              <span className="text-muted">Progres: Tahap {Math.min(currentStageIndex + 1, totalStages)} dari {totalStages}</span>
               <span className="font-semibold text-ink">{progressPercent}%</span>
             </div>
             <div className="w-full bg-canvas border border-line/60 rounded-full h-2 overflow-hidden">
